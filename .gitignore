@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+run/
+*.pid
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Model files (large - uncomment if you don't want to track them)
+# *.pt
+# *.pth
+# *.onnx
+
+# Data directories (uncomment if you don't want to track them)
+# data/
+# dataset/
+# Images/
+# runs/
+
+# Poke-Bowl specific
+Poke-Bowl---updated-January/run/
+Poke-Bowl---updated-January/data/*.db*
+Poke-Bowl---updated-January/runs/
+Poke-Bowl---updated-January/__pycache__/
+Poke-Bowl---updated-January/**/__pycache__/

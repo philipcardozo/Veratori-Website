@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poke Bowl Inventory System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #0f1419;
+            color: #e8eaed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 16px;
+            max-width: 2400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #1e2936 0%, #252f3d 100%);
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .status-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+        }
+
+        /* Diagnostics Panel - Hidden by default */
+        .diagnostics-panel {
+            position: fixed;
+            background: rgba(30, 41, 54, 0.98);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 280px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            max-height: calc(100vh - 20px);
+            overflow-y: auto;
+        }
+
+        .diagnostics-trigger {
+            cursor: pointer;
+            padding: 6px 12px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 6px;
+            font-size: 12px;
+            color: #4CAF50;
+            transition: all 0.2s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .diagnostics-trigger:hover {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        .diagnostics-trigger:hover + .diagnostics-panel,
+        .diagnostics-panel:hover {
+            display: flex;
+        }
+
+        .diag-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            padding: 4px 0;
+        }
+
+        .diag-label {
+            color: #9aa0a6;
+            font-weight: 500;
+        }
+
+        .diag-value {
+            color: #4CAF50;
+            font-weight: 600;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .logout-button {
+            padding: 8px 16px;
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 8px;
+            color: #f44336;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logout-button:hover {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.5);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #666;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected {
+            background-color: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            margin-bottom: 16px;
+        }
+
+        .video-section {
+            flex: 2.5;
+            background: linear-gradient(135deg, #1e2936 0%, #252f3d 100%);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .video-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0f1419;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            min-height: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #videoFeed {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            display: block;
+        }
+
+        .no-feed {
+            color: #666;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Inventory Section */
+        .inventory-section {
+            flex: 1;
+            background: linear-gradient(135deg, #1e2936 0%, #252f3d 100%);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .total-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(76, 175, 80, 0.15);
+            border-radius: 8px;
+        }
+
+        .total-label {
+            font-size: 12px;
+            color: #9aa0a6;
+            font-weight: 500;
+        }
+
+        .total-items {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4CAF50;
+        }
+
+        .inventory-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            background: rgba(15, 20, 25, 0.6);
+            border-radius: 8px;
+            border-left: 3px solid #4CAF50;
+            transition: all 0.2s ease;
+        }
+
+        .inventory-item:hover {
+            background: rgba(15, 20, 25, 0.8);
+            transform: translateX(2px);
+        }
+
+        .item-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e8eaed;
+        }
+
+        .item-freshness {
+            font-size: 11px;
+            color: #9aa0a6;
+            font-weight: 500;
+        }
+
+        .item-freshness.expired {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .item-count {
+            font-size: 20px;
+            font-weight: 700;
+            color: #4CAF50;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .empty-inventory {
+            text-align: center;
+            color: #666;
+            padding: 60px 20px;
+            font-size: 14px;
+        }
+
+        /* Sales Log Section */
+        .sales-log-section {
+            background: linear-gradient(135deg, #1e2936 0%, #252f3d 100%);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sales-log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sales-count-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(33, 150, 243, 0.15);
+            border-radius: 6px;
+            font-size: 12px;
+            color: #2196F3;
+            font-weight: 600;
+        }
+
+        .sales-log-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .sales-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: rgba(15, 20, 25, 0.6);
+            border-radius: 8px;
+            border-left: 3px solid #2196F3;
+            transition: all 0.2s ease;
+        }
+
+        .sales-entry:hover {
+            background: rgba(15, 20, 25, 0.8);
+        }
+
+        .sales-product {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e8eaed;
+            flex: 1;
+        }
+
+        .sales-time {
+            font-size: 12px;
+            color: #9aa0a6;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .empty-sales {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        /* Scrollbar styling */
+        .inventory-list::-webkit-scrollbar,
+        .sales-log-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .inventory-list::-webkit-scrollbar-track,
+        .sales-log-list::-webkit-scrollbar-track {
+            background: rgba(15, 20, 25, 0.4);
+            border-radius: 3px;
+        }
+
+        .inventory-list::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            border-radius: 3px;
+        }
+
+        .sales-log-list::-webkit-scrollbar-thumb {
+            background: #2196F3;
+            border-radius: 3px;
+        }
+
+        .inventory-list::-webkit-scrollbar-thumb:hover,
+        .sales-log-list::-webkit-scrollbar-thumb:hover {
+            opacity: 0.8;
+        }
+
+        /* Alerts Section */
+        .alerts-section {
+            background: linear-gradient(135deg, #1e2936 0%, #252f3d 100%);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 16px;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .alerts-count-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 152, 0, 0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            font-size: 12px;
+            color: #FF9800;
+            font-weight: 600;
+        }
+
+        .alerts-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .alert-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid #FF9800;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .alert-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .alert-item.low-stock {
+            border-left-color: #FF9800;
+        }
+
+        .alert-item.expiration {
+            border-left-color: #f44336;
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .alert-type {
+            font-size: 13px;
+            font-weight: 600;
+            color: #FF9800;
+        }
+
+        .alert-item.expiration .alert-type {
+            color: #f44336;
+        }
+
+        .alert-time {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .alert-message {
+            font-size: 13px;
+            color: #e8eaed;
+            line-height: 1.4;
+        }
+
+        .alert-product {
+            font-weight: 600;
+            color: #4CAF50;
+        }
+
+        .empty-alerts {
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            padding: 40px 20px;
+        }
+
+        .alerts-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .alerts-list::-webkit-scrollbar-track {
+            background: rgba(15, 20, 25, 0.4);
+            border-radius: 3px;
+        }
+
+        .alerts-list::-webkit-scrollbar-thumb {
+            background: #FF9800;
+            border-radius: 3px;
+        }
+
+        .alerts-list::-webkit-scrollbar-thumb:hover {
+            opacity: 0.8;
+        }
+
+        /* Sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 270px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a2332 0%, #151d28 100%);
+            z-index: 2000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .sidebar-brand {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+        }
+        .sidebar-close {
+            background: none;
+            border: none;
+            color: #9aa0a6;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.15s;
+            line-height: 1;
+        }
+        .sidebar-close:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: #9aa0a6;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #e8eaed;
+        }
+        .sidebar-link.active {
+            background: rgba(76, 175, 80, 0.12);
+            color: #4CAF50;
+            font-weight: 600;
+        }
+        .sidebar-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+        .menu-btn {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e8eaed;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            margin-right: 12px;
+        }
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .menu-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Camera Switcher */
+        .camera-switcher {
+            position: relative;
+        }
+
+        .camera-switch-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 6px;
+            color: #2196F3;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .camera-switch-btn:hover {
+            background: rgba(33, 150, 243, 0.2);
+            border-color: rgba(33, 150, 243, 0.5);
+        }
+
+        .camera-switch-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .camera-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            min-width: 240px;
+            background: rgba(30, 41, 54, 0.98);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .camera-dropdown.open {
+            display: block;
+        }
+
+        .camera-dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .camera-dropdown-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9aa0a6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .camera-refresh-btn {
+            background: none;
+            border: none;
+            color: #2196F3;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.15s;
+            font-family: inherit;
+        }
+
+        .camera-refresh-btn:hover {
+            background: rgba(33, 150, 243, 0.15);
+        }
+
+        .camera-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-size: 13px;
+            color: #e8eaed;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .camera-option:hover {
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .camera-option.active {
+            color: #2196F3;
+            font-weight: 600;
+        }
+
+        .camera-option-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid #555;
+            flex-shrink: 0;
+        }
+
+        .camera-option.active .camera-option-dot {
+            background: #2196F3;
+            border-color: #2196F3;
+            box-shadow: 0 0 6px rgba(33, 150, 243, 0.5);
+        }
+
+        .camera-no-items {
+            padding: 14px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .video-section,
+            .inventory-section {
+                flex: 1;
+            }
+
+            .diagnostics-panel {
+                right: 10px;
+                top: auto;
+                transform: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            .diagnostics-trigger {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-brand">Poke Bowl</span>
+            <button class="sidebar-close" id="sidebarClose">&times;</button>
+        </div>
+        <div class="sidebar-nav">
+            <a href="index.html" class="sidebar-link active">
+                <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="upload.html" class="sidebar-link">
+                <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+                <span>Upload</span>
+            </a>
+            <a href="analytics.html" class="sidebar-link">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H5V7h7v10z"/><path d="M6 9h4v2H6zm0 3h4v2H6zm0 3h4v2H6zm7-6h4v8h-4z"/></svg>
+                <span>Data & Analytics</span>
+            </a>
+            <a href="account.html" class="sidebar-link">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                <span>Account</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <button class="menu-btn" id="menuBtn" title="Open menu">
+                    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                </button>
+                <h1>Poke Bowl Inventory System</h1>
+            </div>
+            <div class="status-area">
+                <div class="diagnostics-trigger" id="diagTrigger">Diagnostics</div>
+                <div class="diagnostics-panel" id="diagPanel">
+                    <div class="diag-item">
+                        <span class="diag-label">FPS</span>
+                        <span class="diag-value" id="diagFPS">--</span>
+                    </div>
+                    <div class="diag-item">
+                        <span class="diag-label">Inference Time</span>
+                        <span class="diag-value" id="diagInference">--</span>
+                    </div>
+                    <div class="diag-item">
+                        <span class="diag-label">Frames Processed</span>
+                        <span class="diag-value" id="diagFrames">--</span>
+                    </div>
+                    <div class="diag-item">
+                        <span class="diag-label">Active Connections</span>
+                        <span class="diag-value" id="diagConnections">--</span>
+                    </div>
+                </div>
+                
+                <button class="logout-button" id="logoutButton">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="section-header">
+                    <span class="section-title">Live Camera Feed</span>
+                    <div class="camera-switcher" id="cameraSwitcher">
+                        <button class="camera-switch-btn" id="cameraSwitchBtn" title="Switch camera source">
+                            <svg viewBox="0 0 24 24"><path d="M20 4h-3.17L15 2H9L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+                            <span id="activeCameraLabel">Camera</span>
+                        </button>
+                        <div class="camera-dropdown" id="cameraDropdown">
+                            <div class="camera-dropdown-header">
+                                <span class="camera-dropdown-title">Camera Sources</span>
+                                <button class="camera-refresh-btn" id="cameraRefreshBtn">Refresh</button>
+                            </div>
+                            <div id="cameraList">
+                                <div class="camera-no-items">Loading cameras…</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-container">
+                    <img id="videoFeed" alt="Live video feed" style="display: none;">
+                    <div class="no-feed" id="noFeed">Waiting for camera feed...</div>
+                </div>
+            </div>
+
+            <div class="inventory-section">
+                <div class="inventory-header">
+                    <span class="section-title">Current Inventory</span>
+                    <div class="total-badge">
+                        <span class="total-label">Total</span>
+                        <span class="total-items" id="totalItems">0</span>
+                    </div>
+                </div>
+                <div class="inventory-list" id="inventoryList">
+                    <div class="empty-inventory">No items detected</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sales-log-section">
+            <div class="sales-log-header">
+                <span class="section-title">Sales Log</span>
+                <div class="sales-count-badge">
+                    <span id="salesCount">0</span>
+                    <span>sales recorded</span>
+                </div>
+            </div>
+            <div class="sales-log-list" id="salesLogList">
+                <div class="empty-sales">No sales recorded yet</div>
+            </div>
+        </div>
+
+        <div class="alerts-section">
+            <div class="alerts-header">
+                <span class="section-title">System Alerts</span>
+                <div class="alerts-count-badge">
+                    <span id="alertsCount">0</span>
+                    <span>active alerts</span>
+                </div>
+            </div>
+            <div class="alerts-list" id="alertsList">
+                <div class="empty-alerts">No alerts at this time</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let ws = null;
+        let reconnectInterval = null;
+        let isConnected = false;
+
+        // DOM elements
+        const videoFeed = document.getElementById('videoFeed');
+        const noFeed = document.getElementById('noFeed');
+        const inventoryList = document.getElementById('inventoryList');
+        const totalItems = document.getElementById('totalItems');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const diagTrigger = document.getElementById('diagTrigger');
+        const diagPanel = document.getElementById('diagPanel');
+        const diagFPS = document.getElementById('diagFPS');
+        const diagInference = document.getElementById('diagInference');
+        const diagFrames = document.getElementById('diagFrames');
+        const diagConnections = document.getElementById('diagConnections');
+        const salesLogList = document.getElementById('salesLogList');
+        const salesCount = document.getElementById('salesCount');
+        const alertsList = document.getElementById('alertsList');
+        const alertsCount = document.getElementById('alertsCount');
+
+        // Diagnostics panel positioning (hover-based, no toggle needed)
+        function positionDiagnosticsPanel() {
+            const triggerRect = diagTrigger.getBoundingClientRect();
+            const panelWidth = 280;
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const padding = 10;
+            
+            // Calculate horizontal position (align to right of trigger)
+            let leftPosition = triggerRect.right - panelWidth;
+            
+            // Ensure panel doesn't go off left edge
+            if (leftPosition < padding) {
+                leftPosition = triggerRect.left;
+            }
+            
+            // Ensure panel doesn't go off right edge
+            if (leftPosition + panelWidth > viewportWidth - padding) {
+                leftPosition = viewportWidth - panelWidth - padding;
+            }
+            
+            // Position below trigger
+            let topPosition = triggerRect.bottom + 8;
+            
+            // Set position
+            diagPanel.style.top = `${topPosition}px`;
+            diagPanel.style.left = `${leftPosition}px`;
+        }
+        
+        // Position panel on page load
+        positionDiagnosticsPanel();
+        
+        // Reposition panel on window resize
+        window.addEventListener('resize', positionDiagnosticsPanel);
+
+        // Freshness tracking for specific products
+        const TRACKED_PRODUCTS = ['passion fruit', 'maui custard', 'lemon cake', 'mango', 'watermelon', 'pineapple'];
+        const EXPIRATION_DAYS = 5;
+        let freshnessState = {}; // Server-provided freshness data
+        let freshnessTimers = {}; // Store interval IDs for live timers
+
+        // Note: Sales tracking is now handled server-side on 5-second snapshot intervals
+        // Sales data comes via WebSocket 'sales' messages
+
+        // Connect to WebSocket
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            console.log('Connecting to:', wsUrl);
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                isConnected = true;
+                updateConnectionStatus(true);
+                clearInterval(reconnectInterval);
+                reconnectInterval = null;
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    handleMessage(message);
+                } catch (e) {
+                    console.error('Error parsing message:', e);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                isConnected = false;
+                updateConnectionStatus(false);
+                
+                // Attempt reconnection
+                if (!reconnectInterval) {
+                    reconnectInterval = setInterval(() => {
+                        console.log('Attempting to reconnect...');
+                        connect();
+                    }, 3000);
+                }
+            };
+        }
+
+        // Handle incoming messages
+        function handleMessage(message) {
+            switch (message.type) {
+                case 'frame':
+                    updateVideoFeed(message.data);
+                    break;
+                case 'inventory':
+                    updateInventory(message.data);
+                    break;
+                case 'stats':
+                    updateStats(message.data);
+                    break;
+                case 'freshness':
+                    updateFreshness(message.data);
+                    break;
+                case 'sales':
+                    updateSalesFromServer(message.data);
+                    break;
+                case 'alerts':
+                    updateAlerts(message.data);
+                    break;
+                case 'camera_switched':
+                    onCameraSwitched(message);
+                    break;
+                case 'camera_switch_result':
+                    onCameraSwitchResult(message);
+                    break;
+            }
+        }
+
+        // Update video feed
+        function updateVideoFeed(frameData) {
+            videoFeed.src = 'data:image/jpeg;base64,' + frameData;
+            videoFeed.style.display = 'block';
+            noFeed.style.display = 'none';
+        }
+
+        // Update freshness data from server
+        function updateFreshness(data) {
+            freshnessState = data || {};
+        }
+        
+        // Start live timer that updates every second
+        function startLiveTimer(productName, element, firstSeenUtc) {
+            // Clear existing timer if any
+            if (freshnessTimers[productName]) {
+                clearInterval(freshnessTimers[productName]);
+            }
+            
+            // Update timer every second
+            freshnessTimers[productName] = setInterval(() => {
+                const nowUtc = Date.now() / 1000;
+                const ageSeconds = nowUtc - firstSeenUtc;
+                
+                // Calculate weeks, days, hours, minutes, seconds
+                const weeks = Math.floor(ageSeconds / (7 * 24 * 60 * 60));
+                const days = Math.floor((ageSeconds % (7 * 24 * 60 * 60)) / (24 * 60 * 60));
+                const hours = Math.floor((ageSeconds % (24 * 60 * 60)) / (60 * 60));
+                const minutes = Math.floor((ageSeconds % (60 * 60)) / 60);
+                const seconds = Math.floor(ageSeconds % 60);
+                
+                // Build time string
+                let timeParts = [];
+                if (weeks > 0) timeParts.push(`${weeks}w`);
+                if (days > 0) timeParts.push(`${days}d`);
+                if (hours > 0) timeParts.push(`${hours}h`);
+                if (minutes > 0) timeParts.push(`${minutes}m`);
+                timeParts.push(`${seconds}s`);
+                
+                const timeText = timeParts.join(' ');
+                
+                // Check if expired (more than 5 days)
+                const expired = ageSeconds > (EXPIRATION_DAYS * 24 * 60 * 60);
+                
+                // Update element
+                if (element && document.contains(element)) {
+                    element.textContent = expired ? `${timeText} - EXPIRED` : timeText;
+                    if (expired) {
+                        element.classList.add('expired');
+                    } else {
+                        element.classList.remove('expired');
+                    }
+                } else {
+                    // Element no longer exists, clear timer
+                    clearInterval(freshnessTimers[productName]);
+                    delete freshnessTimers[productName];
+                }
+            }, 1000); // Update every second
+        }
+
+        // Format freshness display with weeks, days, hours, minutes, seconds
+        function formatFreshness(productName) {
+            const normalized = productName.toLowerCase();
+            
+            // Try exact match first
+            let freshness = freshnessState[normalized];
+            
+            // If no exact match, try partial match
+            if (!freshness) {
+                for (const key in freshnessState) {
+                    if (key.includes(normalized) || normalized.includes(key)) {
+                        freshness = freshnessState[key];
+                        break;
+                    }
+                }
+            }
+            
+            // If no freshness data, calculate from now (just detected)
+            let firstSeenUtc;
+            if (!freshness || !freshness.first_seen_utc) {
+                firstSeenUtc = Date.now() / 1000; // Current time in seconds
+            } else {
+                firstSeenUtc = freshness.first_seen_utc;
+            }
+            
+            // Calculate time difference
+            const nowUtc = Date.now() / 1000;
+            const ageSeconds = nowUtc - firstSeenUtc;
+            
+            // Calculate weeks, days, hours, minutes, seconds
+            const weeks = Math.floor(ageSeconds / (7 * 24 * 60 * 60));
+            const days = Math.floor((ageSeconds % (7 * 24 * 60 * 60)) / (24 * 60 * 60));
+            const hours = Math.floor((ageSeconds % (24 * 60 * 60)) / (60 * 60));
+            const minutes = Math.floor((ageSeconds % (60 * 60)) / 60);
+            const seconds = Math.floor(ageSeconds % 60);
+            
+            // Build time string
+            let timeParts = [];
+            if (weeks > 0) timeParts.push(`${weeks}w`);
+            if (days > 0) timeParts.push(`${days}d`);
+            if (hours > 0) timeParts.push(`${hours}h`);
+            if (minutes > 0) timeParts.push(`${minutes}m`);
+            timeParts.push(`${seconds}s`);
+            
+            const timeText = timeParts.join(' ');
+            
+            // Check if expired (more than 5 days = 432000 seconds)
+            const expired = ageSeconds > (EXPIRATION_DAYS * 24 * 60 * 60);
+            
+            return {
+                text: expired ? `${timeText} - EXPIRED` : timeText,
+                expired: expired,
+                firstSeenUtc: firstSeenUtc
+            };
+        }
+
+        // Update inventory display
+        function updateInventory(inventory) {
+            // Calculate total items
+            const total = Object.values(inventory).reduce((sum, count) => sum + count, 0);
+            totalItems.textContent = total;
+
+            // Note: Sales detection is now handled server-side on 5-second snapshot intervals
+            // No client-side sales detection to avoid false positives from frame-by-frame fluctuations
+
+            // Clear current list
+            inventoryList.innerHTML = '';
+
+            // Check if empty
+            if (total === 0) {
+                inventoryList.innerHTML = '<div class="empty-inventory">No items detected</div>';
+                return;
+            }
+
+            // Sort by count (descending)
+            const sortedItems = Object.entries(inventory).sort((a, b) => b[1] - a[1]);
+
+            // Create inventory items
+            sortedItems.forEach(([name, count]) => {
+                const item = document.createElement('div');
+                item.className = 'inventory-item';
+                
+                const itemInfo = document.createElement('div');
+                itemInfo.className = 'item-info';
+                
+                const itemName = document.createElement('div');
+                itemName.className = 'item-name';
+                itemName.textContent = name;
+                
+                itemInfo.appendChild(itemName);
+                
+                // Add freshness timer for tracked products
+                const normalizedName = name.toLowerCase();
+                // Check if any tracked product is contained in this product name
+                const isTracked = TRACKED_PRODUCTS.some(tracked => 
+                    normalizedName.includes(tracked) || tracked.includes(normalizedName)
+                );
+                
+                if (isTracked) {
+                    const freshness = formatFreshness(name);
+                    const freshnessDiv = document.createElement('div');
+                    freshnessDiv.className = 'item-freshness';
+                    freshnessDiv.setAttribute('data-product', name);
+                    if (freshness.expired) {
+                        freshnessDiv.classList.add('expired');
+                    }
+                    freshnessDiv.textContent = freshness.text;
+                    itemInfo.appendChild(freshnessDiv);
+                    
+                    // Start live timer update for this product
+                    startLiveTimer(name, freshnessDiv, freshness.firstSeenUtc);
+                }
+                
+                const itemCount = document.createElement('div');
+                itemCount.className = 'item-count';
+                itemCount.textContent = count;
+                
+                item.appendChild(itemInfo);
+                item.appendChild(itemCount);
+                inventoryList.appendChild(item);
+            });
+
+            // Update previous total for next comparison
+            previousInventoryTotal = total;
+        }
+
+        // Update sales log from server data (5-second snapshot interval)
+        function updateSalesFromServer(salesData) {
+            if (!salesData || salesData.length === 0) {
+                salesCount.textContent = '0';
+                salesLogList.innerHTML = '<div class="empty-sales">No sales recorded yet</div>';
+                return;
+            }
+            
+            salesCount.textContent = salesData.length;
+            salesLogList.innerHTML = '';
+            
+            // Display sales in order (newest first)
+            salesData.forEach(sale => {
+                const entry = document.createElement('div');
+                entry.className = 'sales-entry';
+                
+                const productDiv = document.createElement('div');
+                productDiv.className = 'sales-product';
+                
+                // Display product name and quantity
+                const productName = sale.product_name || 'Unknown';
+                const quantity = sale.quantity_delta || 1;
+                if (quantity > 1) {
+                    productDiv.textContent = `${productName} (x${quantity})`;
+                } else {
+                    productDiv.textContent = productName;
+                }
+                
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'sales-time';
+                // Use EST timestamp from server
+                timeDiv.textContent = sale.timestamp_est || new Date(sale.timestamp_utc * 1000).toLocaleString();
+                
+                entry.appendChild(productDiv);
+                entry.appendChild(timeDiv);
+                salesLogList.appendChild(entry);
+            });
+        }
+
+        // Update alerts display
+        function updateAlerts(alerts) {
+            alertsCount.textContent = alerts.length;
+            
+            if (alerts.length === 0) {
+                alertsList.innerHTML = '<div class="empty-alerts">No alerts at this time</div>';
+                return;
+            }
+            
+            alertsList.innerHTML = '';
+            
+            alerts.forEach(alert => {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert-item ${alert.alert_type}`;
+                
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'alert-header';
+                
+                const typeDiv = document.createElement('div');
+                typeDiv.className = 'alert-type';
+                typeDiv.textContent = alert.alert_type === 'low_stock' ? 'Low Stock' : 'Expiration Warning';
+                
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'alert-time';
+                timeDiv.textContent = alert.timestamp_est || new Date(alert.timestamp_utc * 1000).toLocaleString();
+                
+                headerDiv.appendChild(typeDiv);
+                headerDiv.appendChild(timeDiv);
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'alert-message';
+                messageDiv.innerHTML = alert.message.replace(
+                    alert.product_name,
+                    `<span class="alert-product">${alert.product_name}</span>`
+                );
+                
+                alertDiv.appendChild(headerDiv);
+                alertDiv.appendChild(messageDiv);
+                alertsList.appendChild(alertDiv);
+            });
+        }
+
+        // Update performance stats
+        function updateStats(stats) {
+            if (stats.fps !== undefined) {
+                diagFPS.textContent = stats.fps.toFixed(1);
+            }
+            if (stats.inference_time !== undefined) {
+                diagInference.textContent = (stats.inference_time * 1000).toFixed(0) + 'ms';
+            }
+            if (stats.frame_count !== undefined) {
+                diagFrames.textContent = stats.frame_count;
+            }
+            if (stats.active_connections !== undefined) {
+                diagConnections.textContent = stats.active_connections;
+            }
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            if (connected) {
+                connectionStatus.textContent = 'Connected';
+                statusIndicator.classList.add('connected');
+            } else {
+                connectionStatus.textContent = 'Disconnected';
+                statusIndicator.classList.remove('connected');
+                videoFeed.style.display = 'none';
+                noFeed.style.display = 'block';
+                noFeed.textContent = 'Reconnecting...';
+            }
+        }
+
+        // Update freshness timers every minute
+        setInterval(() => {
+            // Trigger inventory re-render to update freshness displays
+            if (isConnected) {
+                // The freshness will be recalculated on next inventory update
+            }
+        }, 60000); // Update every minute
+
+        // Logout handler
+        function handleLogout() {
+            fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'same-origin'
+            })
+            .then(() => {
+                window.location.href = '/login';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                // Redirect anyway
+                window.location.href = '/login';
+            });
+        }
+
+        // Setup logout button
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', handleLogout);
+        }
+
+        // ---------------------------------------------------------------
+        // Camera Switcher
+        // ---------------------------------------------------------------
+        const cameraSwitchBtn = document.getElementById('cameraSwitchBtn');
+        const cameraDropdown = document.getElementById('cameraDropdown');
+        const cameraList = document.getElementById('cameraList');
+        const cameraRefreshBtn = document.getElementById('cameraRefreshBtn');
+        const activeCameraLabel = document.getElementById('activeCameraLabel');
+
+        let availableCameras = [];
+        let activeCameraIndex = null;
+        let cameraSwitching = false;
+
+        // Toggle dropdown
+        cameraSwitchBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = cameraDropdown.classList.contains('open');
+            cameraDropdown.classList.toggle('open', !isOpen);
+            if (!isOpen && availableCameras.length === 0) {
+                fetchCameras(false);
+            }
+        });
+
+        // Close dropdown on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#cameraSwitcher')) {
+                cameraDropdown.classList.remove('open');
+            }
+        });
+
+        // Refresh cameras list
+        cameraRefreshBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fetchCameras(true);
+        });
+
+        // Fetch cameras from backend
+        function fetchCameras(refresh) {
+            const url = refresh ? '/api/cameras?refresh=1' : '/api/cameras';
+            cameraList.innerHTML = '<div class="camera-no-items">Scanning…</div>';
+
+            fetch(url, { credentials: 'same-origin' })
+                .then(r => r.json())
+                .then(data => {
+                    availableCameras = data.cameras || [];
+                    activeCameraIndex = data.active_index;
+                    renderCameraList();
+                    updateActiveLabel();
+                })
+                .catch(err => {
+                    console.error('Failed to fetch cameras:', err);
+                    cameraList.innerHTML = '<div class="camera-no-items">Failed to load cameras</div>';
+                });
+        }
+
+        // Render camera options
+        function renderCameraList() {
+            if (availableCameras.length === 0) {
+                cameraList.innerHTML = '<div class="camera-no-items">No cameras detected</div>';
+                return;
+            }
+
+            cameraList.innerHTML = '';
+            availableCameras.forEach(cam => {
+                const btn = document.createElement('button');
+                btn.className = 'camera-option' + (cam.index === activeCameraIndex ? ' active' : '');
+                btn.innerHTML =
+                    '<span class="camera-option-dot"></span>' +
+                    '<span>' + cam.name + '</span>';
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    switchCamera(cam.index);
+                });
+                cameraList.appendChild(btn);
+            });
+        }
+
+        // Update the label on the toggle button
+        function updateActiveLabel() {
+            if (activeCameraIndex === null || activeCameraIndex === undefined) {
+                activeCameraLabel.textContent = 'Camera';
+                return;
+            }
+            const cam = availableCameras.find(c => c.index === activeCameraIndex);
+            activeCameraLabel.textContent = cam ? cam.name : ('Camera ' + activeCameraIndex);
+        }
+
+        // Request camera switch
+        function switchCamera(index) {
+            if (cameraSwitching || index === activeCameraIndex) return;
+            cameraSwitching = true;
+
+            // Visual feedback
+            activeCameraLabel.textContent = 'Switching…';
+
+            fetch('/api/camera/switch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ index: index }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                cameraSwitching = false;
+                if (data.success) {
+                    activeCameraIndex = data.active_index;
+                    renderCameraList();
+                    updateActiveLabel();
+                    cameraDropdown.classList.remove('open');
+                } else {
+                    console.error('Camera switch failed:', data.message);
+                    updateActiveLabel();
+                }
+            })
+            .catch(err => {
+                cameraSwitching = false;
+                console.error('Camera switch error:', err);
+                updateActiveLabel();
+            });
+        }
+
+        // Handle WS notification that camera changed (from another client)
+        function onCameraSwitched(msg) {
+            activeCameraIndex = msg.active_index;
+            renderCameraList();
+            updateActiveLabel();
+        }
+
+        // Handle WS switch result (if switching via WS instead of REST)
+        function onCameraSwitchResult(msg) {
+            cameraSwitching = false;
+            if (msg.success) {
+                activeCameraIndex = msg.active_index;
+                renderCameraList();
+                updateActiveLabel();
+                cameraDropdown.classList.remove('open');
+            } else {
+                console.error('WS camera switch failed:', msg.message);
+                updateActiveLabel();
+            }
+        }
+
+        // Sidebar toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarClose = document.getElementById('sidebarClose');
+
+        function openSidebar() { sidebar.classList.add('open'); sidebarOverlay.classList.add('active'); }
+        function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('active'); }
+
+        menuBtn.addEventListener('click', openSidebar);
+        sidebarClose.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // Initialize connection
+        connect();
+
+        // Pre-fetch camera list once connected
+        setTimeout(() => fetchCameras(false), 1500);
+
+        // Handle page visibility
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                console.log('Page hidden');
+            } else {
+                console.log('Page visible');
+                if (!isConnected && !reconnectInterval) {
+                    connect();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
