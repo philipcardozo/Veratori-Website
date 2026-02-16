@@ -6,16 +6,21 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?logo=flutter)](https://flutter.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> **Cutting-edge SaaS platform for ethical inventory management in food retail and logistics**  
-> AI-driven forecasting • Real-time object detection • Multi-franchise management • Mobile restock app • 40% waste reduction
+**Cutting-edge SaaS platform for ethical inventory management in food retail and logistics**
 
-[Quick Start](#-quick-start) • [Features](#-features) • [Architecture](#-architecture) • [Mobile App](#-mobile-app) • [Documentation](#-documentation)
+AI-driven forecasting • Real-time object detection • Multi-franchise management • Mobile restock app • 40% waste reduction
+
+[Quick Start](#quick-start) • [Features](#features) • [Architecture](#architecture) • [Mobile App](#mobile-app) • [Documentation](#documentation)
 
 ---
 
-## 🎯 Overview
+## Overview
 
-Veratori is a comprehensive inventory management platform that combines:
+Veratori is a comprehensive inventory management platform that combines real-time AI detection, multi-franchise management, mobile restock documentation, and advanced analytics to reduce food waste by up to 40% while optimizing space utilization and delivering precise, waste-free operations.
+
+![Veratori Platform Overview](docs/images/platform-overview.png)
+
+### Key Capabilities
 
 - **Real-time AI Detection**: YOLO v8+ object detection with GPU acceleration
 - **Multi-Franchise Dashboard**: Executive control room for managing multiple locations
@@ -24,43 +29,69 @@ Veratori is a comprehensive inventory management platform that combines:
 - **Automated Alerts**: Low-stock and expiration monitoring with notifications
 - **Sales Attribution**: Automatic sales detection and tracking
 
-**Result**: Up to 40% reduction in food waste, optimized space utilization, and precise waste-free operations.
-
 ---
 
-## ✨ Features
+## Features
 
 ### Core Platform
-- ✅ **Real-time Detection** - YOLO v8+ with GPU acceleration (15-30 FPS)
-- ✅ **Multi-Franchise Management** - Centralized control room for all locations
-- ✅ **Executive Dashboard** - KPI tracking, analytics, and forecasting
-- ✅ **Role-Based Access** - Owner, Regional Manager, Supervisor, Employee roles
-- ✅ **Live Activity Feed** - Real-time operational intelligence
-- ✅ **System Health Monitoring** - GPU usage, latency, database health
-- ✅ **Automated Alerts** - Low-stock and expiration notifications
-- ✅ **Sales Attribution** - Automatic sales detection and logging
-- ✅ **Data Persistence** - SQLite database with audit trails
+
+**Real-time Detection**
+- YOLO v8+ with GPU acceleration (15-30 FPS)
+- Temporal smoothing for stable inventory counts
+- Support for 40+ product classes
+
+**Multi-Franchise Management**
+- Centralized control room for all locations
+- Cross-franchise comparison and benchmarking
+- Role-based access control (Owner, Regional Manager, Supervisor, Employee)
+
+**Executive Dashboard**
+- Real-time KPI tracking and analytics
+- Sales trends and inventory turnover analysis
+- Predictive stockout estimation
+- Financial impact estimation
+
+**System Monitoring**
+- Live activity feed with real-time events
+- System health monitoring (GPU usage, latency, database health)
+- Automated alerts for low-stock and expiration
+- WebSocket-based real-time updates
+
+**Data Persistence**
+- SQLite database with audit trails
+- Inventory snapshots and sales attribution
+- Complete operational history
 
 ### Mobile App (Flutter)
-- ✅ **Employee Restock Submissions** - Photo-based restock documentation
-- ✅ **YOLO Detection Preview** - Real-time product detection before submission
-- ✅ **Submission Management** - View all submissions with status tracking
-- ✅ **Push Notifications** - Manager review updates
-- ✅ **Cross-Platform** - iOS and Android support
-- ✅ **Offline Capable** - Works with intermittent connectivity
+
+**Employee Restock Submissions**
+- Photo-based restock documentation (minimum 3 photos)
+- Real-time YOLO detection preview before submission
+- Submission management with status tracking
+- Push notifications for manager reviews
+- Cross-platform support (iOS and Android)
+- Offline capability for intermittent connectivity
+
+![Mobile App Interface](docs/images/mobile-app-screenshot.png)
 
 ### Web Dashboard
-- ✅ **Business Control Room** - Executive KPI strip with real-time metrics
-- ✅ **Franchise Comparison** - Side-by-side performance analysis
-- ✅ **Advanced Analytics** - Sales trends, inventory turnover, alert frequency
-- ✅ **Forecast Snapshot** - Predictive stockout estimation
-- ✅ **Risk & Attention Panel** - Highlighted operational issues
-- ✅ **Restock Moderation** - Manager review and approval workflow
-- ✅ **Export & Reporting** - PDF and Excel exports
+
+**Business Control Room**
+- Executive KPI strip with real-time metrics
+- Franchise comparison with side-by-side analysis
+- Advanced analytics with interactive charts
+- Forecast snapshot with predictive insights
+- Risk and attention panel for operational issues
+- Restock moderation workflow for managers
+- Export and reporting (PDF and Excel)
+
+![Web Dashboard](docs/images/dashboard-screenshot.png)
 
 ---
 
-## 🏗️ Architecture
+## Architecture
+
+### System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -96,41 +127,43 @@ Veratori is a comprehensive inventory management platform that combines:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+![Architecture Diagram](docs/images/architecture-diagram.png)
+
 ### Tech Stack
 
-**Backend:**
+**Backend**
 - Python 3.10 + aiohttp (async web server)
 - PyTorch 2.1.0 (FP16 precision)
 - Ultralytics YOLO v8+
 - OpenCV 4.8+ (computer vision)
 - SQLite (data persistence)
 
-**Frontend:**
+**Frontend**
 - HTML5 + JavaScript (web dashboard)
 - WebSocket (real-time updates)
 - Chart.js (data visualization)
 - Flatpickr (date selection)
 
-**Mobile:**
+**Mobile**
 - Flutter 3.0+ (cross-platform)
 - Provider (state management)
 - Dio (HTTP client)
 - Image Picker (camera/gallery)
 
-**Hardware:**
+**Hardware**
 - NVIDIA Jetson Orin Nano
 - USB camera (UVC-compliant)
 - Optional: HDMI display
 
 ---
 
-## 📱 Mobile App
+## Mobile App
 
 ### Veratori Restock (Flutter)
 
-Employee-facing mobile application for documenting restock actions.
+Employee-facing mobile application for documenting restock actions through structured photo submissions.
 
-**Features:**
+**Key Features:**
 - Photo capture (minimum 3 photos: front, left, right)
 - Real-time YOLO detection preview
 - Submission management with status tracking
@@ -154,9 +187,10 @@ See [veratori_restock_flutter/README.md](Poke-Bowl---updated-January/veratori_re
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
+
 - NVIDIA Jetson Orin Nano with JetPack 6.x
 - USB camera (UVC-compliant)
 - Python 3.10+
@@ -164,13 +198,13 @@ See [veratori_restock_flutter/README.md](Poke-Bowl---updated-January/veratori_re
 
 ### Installation
 
-1. **Clone Repository**
+**1. Clone Repository**
 ```bash
 git clone https://github.com/FelipeCardozo0/Veratori.git
 cd Veratori/Poke-Bowl---updated-January
 ```
 
-2. **Backend Setup**
+**2. Backend Setup**
 ```bash
 # Install dependencies
 pip3 install -r requirements.txt
@@ -185,12 +219,12 @@ cd backend
 python3 main.py
 ```
 
-3. **Access Web Dashboard**
+**3. Access Web Dashboard**
 ```
 http://localhost:8080
 ```
 
-4. **Production Deployment (Auto-start)**
+**4. Production Deployment (Auto-start)**
 ```bash
 cd deployment
 sudo bash setup_autostart.sh
@@ -201,7 +235,7 @@ sudo reboot
 
 ---
 
-## 📊 Project Structure
+## Project Structure
 
 ```
 Veratori/
@@ -243,9 +277,10 @@ Veratori/
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Core APIs
+
 - `GET /` - Web dashboard
 - `GET /api/stats` - System statistics
 - `GET /api/inventory` - Current inventory
@@ -254,6 +289,7 @@ Veratori/
 - `GET /ws` - WebSocket connection
 
 ### Restock APIs (Mobile App)
+
 - `POST /api/restock/login` - Employee login
 - `POST /api/restock/validate` - Session validation
 - `POST /api/restock/detect` - YOLO detection on photo
@@ -265,20 +301,20 @@ Veratori/
 
 ---
 
-## 📈 Performance
+## Performance
 
 | Metric | Typical | Optimized |
 |--------|---------|-----------|
-| **FPS** | 18-22 | 25-30 |
-| **Latency** | 60ms | <50ms |
-| **Inference** | 35ms | 30ms |
-| **CPU Usage** | 40% | 35% |
-| **GPU Usage** | 35% | 40% |
-| **Memory** | 200MB | 180MB |
+| FPS | 18-22 | 25-30 |
+| Latency | 60ms | <50ms |
+| Inference | 35ms | 30ms |
+| CPU Usage | 40% | 35% |
+| GPU Usage | 35% | 40% |
+| Memory | 200MB | 180MB |
 
 ---
 
-## 🎨 Brand Palette
+## Brand Palette
 
 - **Deep Midnight** `#0E1526` — primary dark base
 - **Sage Operation** `#5F974F` — ethical green
@@ -288,19 +324,19 @@ Veratori/
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 | Document | Description |
 |----------|-------------|
-| **[QUICKSTART.md](QUICKSTART.md)** | 10-minute setup guide |
-| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Technical architecture |
-| **[SYSTEM_DIAGRAM.md](SYSTEM_DIAGRAM.md)** | Visual system diagrams |
-| **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** | Production deployment |
-| **[veratori_restock_flutter/README.md](Poke-Bowl---updated-January/veratori_restock_flutter/README.md)** | Mobile app documentation |
+| [QUICKSTART.md](QUICKSTART.md) | 10-minute setup guide |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Technical architecture |
+| [SYSTEM_DIAGRAM.md](SYSTEM_DIAGRAM.md) | Visual system diagrams |
+| [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) | Production deployment |
+| [veratori_restock_flutter/README.md](Poke-Bowl---updated-January/veratori_restock_flutter/README.md) | Mobile app documentation |
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 Edit `config/config.yaml`:
 
@@ -339,7 +375,7 @@ server:
 
 ---
 
-## 🛠️ Usage
+## Usage
 
 ### Start Backend
 ```bash
@@ -367,7 +403,7 @@ flutter run
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Camera not detected
 ```bash
@@ -395,9 +431,9 @@ sudo journalctl -u veratori-inventory -n 50
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions welcome! Please follow these steps:
+Contributions are welcome. Please follow these steps:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -407,13 +443,13 @@ Contributions welcome! Please follow these steps:
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Ultralytics YOLO](https://github.com/ultralytics/ultralytics) - Object detection framework
 - [NVIDIA Jetson](https://developer.nvidia.com/embedded/jetson) - Edge AI platform
@@ -422,7 +458,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📧 Contact
+## Contact
 
 **Felipe Cardozo**  
 GitHub: [@FelipeCardozo0](https://github.com/FelipeCardozo0)  
@@ -430,16 +466,10 @@ Repository: [Veratori](https://github.com/FelipeCardozo0/Veratori)
 
 ---
 
-## 🌟 Status
+## Status
 
 **Version**: 2.0.0  
-**Status**: ✅ Production Ready  
+**Status**: Production Ready  
 **Last Updated**: January 2026
 
-**Ready for immediate deployment!**
-
----
-
-<p align="center">
-  Made with ❤️ for ethical inventory management
-</p>
+Ready for immediate deployment.
