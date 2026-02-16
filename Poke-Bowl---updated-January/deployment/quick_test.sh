@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-echo -e "${BLUE}=== Poke Bowl Inventory System Test ===${NC}"
+echo -e "${BLUE}=== Veratori Inventory System Test ===${NC}"
 echo
 
 # Get project directory

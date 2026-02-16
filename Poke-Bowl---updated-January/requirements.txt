@@ -1,4 +1,4 @@
-# Poke Bowl Inventory System - Python Dependencies
+# Veratori Inventory System - Python Dependencies
 # For NVIDIA Jetson Orin Nano with JetPack 6.x (Ubuntu 22.04)
 
 # Core computer vision and deep learning

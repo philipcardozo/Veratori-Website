@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload — Poke Bowl</title>
+    <title>Upload — Veratori</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -239,11 +239,15 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
         <div class="sidebar-header">
-            <span class="sidebar-brand"><span class="sidebar-brand-dot"></span>Poke Bowl</span>
+            <span class="sidebar-brand"><span class="sidebar-brand-dot"></span>Veratori</span>
             <button class="sidebar-close" id="sidebarClose" aria-label="Close navigation">&times;</button>
         </div>
         <div class="sidebar-section-label">Platform</div>
         <div class="sidebar-nav">
+            <a href="home.html" class="sidebar-link">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>Home</span>
+            </a>
             <a href="index.html" class="sidebar-link">
                 <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
                 <span>Dashboard</span>
@@ -265,7 +269,7 @@
             </a>
         </div>
         <div class="sidebar-footer">
-            <div class="sidebar-version">Poke Bowl v2.0 · Jetson Orin</div>
+            <div class="sidebar-version">Veratori v2.0 · Jetson Orin</div>
         </div>
     </nav>
 
@@ -360,13 +364,40 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Employee Restock Submissions (Manager View) -->
+            <div class="card" style="margin-top: 32px;">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        Employee Restock Submissions
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <select id="restockFilterStatus" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: var(--text-primary); font-size: 13px;">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="flagged">Flagged</option>
+                            <option value="adjustment_required">Requires Adjustment</option>
+                        </select>
+                        <select id="restockFilterFranchise" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: var(--text-primary); font-size: 13px;">
+                            <option value="">All Franchises</option>
+                        </select>
+                        <input type="text" id="restockFilterEmployee" placeholder="Filter by employee..." style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: var(--text-primary); font-size: 13px; min-width: 150px;">
+                        <input type="date" id="restockFilterDate" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: var(--text-primary); font-size: 13px;">
+                    </div>
+                </div>
+                <div id="restockSubmissionsList" style="min-height: 200px;">
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">Loading submissions...</div>
+                </div>
+            </div>
         </main>
 
         <!-- Footer -->
         <footer class="site-footer">
             <div class="footer-inner">
                 <div class="footer-brand">
-                    <div class="footer-logo"><span class="footer-logo-dot"></span>Poke Bowl</div>
+                    <div class="footer-logo"><span class="footer-logo-dot"></span>Veratori</div>
                     <p class="footer-tagline">AI-powered inventory intelligence for real-time tracking and analytics.</p>
                 </div>
                 <div class="footer-col">
@@ -519,6 +550,154 @@
             div.innerHTML = '<div class="label">' + label + '</div><div class="value">' + value + '</div>';
             return div;
         }
+
+        // ── Employee Restock Submissions ──
+        async function loadRestockSubmissions() {
+            const list = document.getElementById('restockSubmissionsList');
+            const statusFilter = document.getElementById('restockFilterStatus').value;
+            const franchiseFilter = document.getElementById('restockFilterFranchise').value;
+            const employeeFilter = document.getElementById('restockFilterEmployee').value.toLowerCase();
+            const dateFilter = document.getElementById('restockFilterDate').value;
+            
+            try {
+                let url = '/api/restock/all?';
+                if (statusFilter) url += `status=${statusFilter}&`;
+                if (franchiseFilter) url += `franchise=${franchiseFilter}&`;
+                if (employeeFilter) url += `employee=${employeeFilter}&`;
+                
+                const response = await fetch(url, { credentials: 'same-origin' });
+                const data = await response.json();
+                
+                if (data.success && data.submissions.length > 0) {
+                    let filtered = data.submissions;
+                    
+                    // Filter by date if provided
+                    if (dateFilter) {
+                        const filterDate = new Date(dateFilter).getTime();
+                        filtered = filtered.filter(sub => {
+                            const subDate = new Date(sub.timestamp * 1000);
+                            return subDate.toDateString() === new Date(filterDate).toDateString();
+                        });
+                    }
+                    
+                    list.innerHTML = filtered.map(sub => {
+                        const statusClass = sub.status === 'approved' ? 'success' : 
+                                          sub.status === 'flagged' ? 'error' :
+                                          sub.status === 'adjustment_required' ? 'processing' : 'processing';
+                        const statusText = sub.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        
+                        return `
+                            <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; background: var(--bg-surface);">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">
+                                            ${sub.product} - ${sub.station}
+                                        </div>
+                                        <div style="font-size: 12px; color: var(--text-muted);">
+                                            ${sub.employee_username} • ${sub.franchise_id} • ${new Date(sub.timestamp * 1000).toLocaleString()}
+                                        </div>
+                                    </div>
+                                    <span class="status-badge ${statusClass}">${statusText}</span>
+                                </div>
+                                ${sub.photos && sub.photos.length > 0 ? `
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-bottom: 12px;">
+                                        ${sub.photos.map(photo => `
+                                            <img src="/api/restock/photo/${photo}" 
+                                                 style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer;"
+                                                 onclick="window.open(this.src, '_blank')"
+                                                 alt="Restock photo">
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                ${sub.detection_results ? `
+                                    <div style="background: rgba(59,130,246,0.1); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                                        <div style="font-size: 12px; font-weight: 600; color: var(--accent-blue); margin-bottom: 8px;">YOLO Detection Results:</div>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                            ${Object.entries(sub.detection_results.product_counts || {}).map(([name, count]) => `
+                                                <span style="background: var(--bg-primary); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--text-primary);">
+                                                    ${name}: ${count}
+                                                </span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${sub.notes ? `<div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: 6px;">${sub.notes}</div>` : ''}
+                                ${sub.feedback ? `<div style="font-size: 13px; color: var(--accent); margin-bottom: 12px; padding: 8px; background: rgba(16,185,129,0.1); border-radius: 6px; font-weight: 500;">Manager: ${sub.feedback}</div>` : ''}
+                                ${sub.status === 'pending' ? `
+                                    <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                                        <button onclick="updateRestockStatus('${sub.submission_id}', 'approved')" 
+                                                style="flex: 1; min-width: 120px; padding: 8px; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
+                                            ✓ Approve
+                                        </button>
+                                        <button onclick="updateRestockStatus('${sub.submission_id}', 'flagged')" 
+                                                style="flex: 1; min-width: 120px; padding: 8px; background: var(--accent-red); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
+                                            ⚠ Flag
+                                        </button>
+                                        <button onclick="updateRestockStatus('${sub.submission_id}', 'adjustment_required')" 
+                                                style="flex: 1; min-width: 120px; padding: 8px; background: var(--accent-amber); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
+                                            ↻ Needs Adjustment
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    list.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No submissions found</div>';
+                }
+            } catch (err) {
+                list.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--accent-red);">Failed to load submissions</div>';
+            }
+        }
+
+        async function updateRestockStatus(submissionId, status) {
+            const feedback = prompt('Add feedback (optional):');
+            
+            try {
+                const response = await fetch('/api/restock/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        submission_id: submissionId,
+                        status: status,
+                        feedback: feedback || null
+                    }),
+                    credentials: 'same-origin'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    setStatus('success', 'Submission status updated');
+                    loadRestockSubmissions();
+                } else {
+                    setStatus('error', data.message || 'Update failed');
+                }
+            } catch (err) {
+                setStatus('error', 'Network error');
+            }
+        }
+
+        // Load restock submissions on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRestockSubmissions();
+            
+            // Setup filters
+            const statusFilter = document.getElementById('restockFilterStatus');
+            const franchiseFilter = document.getElementById('restockFilterFranchise');
+            const employeeFilter = document.getElementById('restockFilterEmployee');
+            const dateFilter = document.getElementById('restockFilterDate');
+            
+            if (statusFilter) statusFilter.addEventListener('change', loadRestockSubmissions);
+            if (franchiseFilter) franchiseFilter.addEventListener('change', loadRestockSubmissions);
+            if (dateFilter) dateFilter.addEventListener('change', loadRestockSubmissions);
+            if (employeeFilter) {
+                let timeout;
+                employeeFilter.addEventListener('input', () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(loadRestockSubmissions, 500);
+                });
+            }
+        });
     </script>
 </body>
 </html>

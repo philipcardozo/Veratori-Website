@@ -67,18 +67,3 @@ htmlcov/
 *.pid
 *.sock
 
-# Next.js
-node_modules/
-.next/
-out/
-build/
-.vercel
-*.tsbuildinfo
-next-env.d.ts
-.pnp
-.pnp.js
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-

@@ -1,8 +1,8 @@
 [Unit]
-Description=Chromium Kiosk Mode for Poke Bowl Inventory
-After=pokebowl-inventory.service graphical.target
+Description=Chromium Kiosk Mode for Veratori Inventory
+After=veratori-inventory.service graphical.target
 Wants=graphical.target
-Requires=pokebowl-inventory.service
+Requires=veratori-inventory.service
 
 [Service]
 Type=simple

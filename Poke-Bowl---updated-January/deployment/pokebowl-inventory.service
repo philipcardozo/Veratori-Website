@@ -1,5 +1,5 @@
 [Unit]
-Description=Poke Bowl Inventory System
+Description=Veratori Inventory System
 After=network.target graphical.target
 Wants=graphical.target
 
@@ -20,7 +20,7 @@ ExecStart=/usr/bin/python3 /home/YOUR_USERNAME/Poke-Bowl---updated-January/backe
 # Logging
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=pokebowl-inventory
+SyslogIdentifier=veratori-inventory
 
 # Resource limits (adjust based on requirements)
 MemoryMax=2G

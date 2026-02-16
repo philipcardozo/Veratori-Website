@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}Poke Bowl Inventory System${NC}"
+echo -e "${BLUE}Veratori Inventory System${NC}"
 echo -e "${BLUE}Complete Jetson Orin Nano Setup${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo

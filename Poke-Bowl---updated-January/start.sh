@@ -1,5 +1,5 @@
 #!/bin/bash
-# Start Poke Bowl Inventory Vision System
+# Start Veratori Inventory Vision System
 # Usage:
 #   ./start.sh           - Start with default (Jetson: production, PC: webcam)
 #   ./start.sh webcam    - Start PC testing with webcam
@@ -18,7 +18,7 @@ MODE="${1:-webcam}"  # Default to webcam for PC testing
 # Main start logic
 main() {
     echo "=========================================="
-    echo "  Poke Bowl Inventory Vision System"
+    echo "  Veratori Inventory Vision System"
     echo "=========================================="
     echo ""
     

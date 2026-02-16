@@ -1,10 +1,10 @@
 """
-Poke Bowl Inventory System - Backend Package
+Veratori Inventory System - Backend Package
 Production-ready computer vision inventory tracking for Jetson Orin Nano
 """
 
 __version__ = "1.0.0"
-__author__ = "Poke Bowl Inventory Team"
+__author__ = "Veratori Inventory Team"
 
 # Package-level imports for convenience
 from .camera import USBCamera

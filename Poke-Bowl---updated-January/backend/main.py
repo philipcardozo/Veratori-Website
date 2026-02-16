@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Poke Bowl Inventory System - Main Entry Point
+Veratori Inventory System - Main Entry Point
 Production-ready computer vision system for Jetson Orin Nano
 """
 
@@ -27,7 +27,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler('/tmp/pokebowl_inventory.log')
+        logging.FileHandler('/tmp/veratori_inventory.log')
     ]
 )
 
@@ -296,7 +296,7 @@ class InventorySystem:
         Main application loop
         """
         logger.info("=" * 60)
-        logger.info("Poke Bowl Inventory System")
+        logger.info("Veratori Inventory System")
         logger.info("=" * 60)
         
         # Initialize components

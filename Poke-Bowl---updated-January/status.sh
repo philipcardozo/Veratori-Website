@@ -1,5 +1,5 @@
 #!/bin/bash
-# Check status of Poke Bowl Inventory Vision System
+# Check status of Veratori Inventory Vision System
 
 set -e
 
@@ -10,7 +10,7 @@ source "$SCRIPT_DIR/scripts/common.sh"
 # Main status logic
 main() {
     echo "=========================================="
-    echo "  Poke Bowl System Status"
+    echo "  Veratori System Status"
     echo "=========================================="
     echo ""
     
@@ -26,7 +26,7 @@ main() {
         
         if [ "$env" = "jetson" ]; then
             print_info "Environment: Jetson (systemd)"
-            print_info "Service: pokebowl-inventory"
+            print_info "Service: veratori-inventory"
             if [ -n "$pid" ]; then
                 print_info "PID: $pid"
             fi
@@ -34,7 +34,7 @@ main() {
             
             echo ""
             echo "Service details:"
-            systemctl status pokebowl-inventory --no-pager -l | head -n 10
+            systemctl status veratori-inventory --no-pager -l | head -n 10
             
         else
             print_info "Environment: PC testing"

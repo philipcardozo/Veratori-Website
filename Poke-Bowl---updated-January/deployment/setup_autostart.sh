@@ -1,5 +1,5 @@
 #!/bin/bash
-# Setup auto-start for Poke Bowl Inventory System with browser kiosk mode
+# Setup auto-start for Veratori Inventory System with browser kiosk mode
 # This script configures both the backend service and Chromium kiosk display
 
 set -e
@@ -10,7 +10,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo -e "${GREEN}=== Poke Bowl Inventory Auto-Start Setup ===${NC}"
+echo -e "${GREEN}=== Veratori Inventory Auto-Start Setup ===${NC}"
 echo
 
 # Check if running as root
@@ -31,9 +31,9 @@ echo
 # Install backend service
 echo -e "${YELLOW}[1/3] Installing backend service...${NC}"
 
-cat > /etc/systemd/system/pokebowl-inventory.service << EOF
+cat > /etc/systemd/system/veratori-inventory.service << EOF
 [Unit]
-Description=Poke Bowl Inventory System
+Description=Veratori Inventory System
 After=network.target graphical.target
 Wants=graphical.target
 
@@ -51,7 +51,7 @@ ExecStart=/usr/bin/python3 $PROJECT_DIR/backend/main.py
 
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=pokebowl-inventory
+SyslogIdentifier=veratori-inventory
 
 MemoryMax=2G
 CPUQuota=400%
@@ -67,10 +67,10 @@ echo -e "${YELLOW}[2/3] Installing Chromium kiosk service...${NC}"
 
 cat > /etc/systemd/system/chromium-kiosk.service << EOF
 [Unit]
-Description=Chromium Kiosk Mode for Poke Bowl Inventory
-After=pokebowl-inventory.service graphical.target
+Description=Chromium Kiosk Mode for Veratori Inventory
+After=veratori-inventory.service graphical.target
 Wants=graphical.target
-Requires=pokebowl-inventory.service
+Requires=veratori-inventory.service
 
 [Service]
 Type=simple
@@ -105,7 +105,7 @@ echo -e "${GREEN}✓ Chromium kiosk service created${NC}"
 echo -e "${YELLOW}[3/3] Enabling services...${NC}"
 
 systemctl daemon-reload
-systemctl enable pokebowl-inventory.service
+systemctl enable veratori-inventory.service
 systemctl enable chromium-kiosk.service
 
 echo -e "${GREEN}✓ Services enabled${NC}"
@@ -118,10 +118,10 @@ echo "  1. Backend inventory system starts"
 echo "  2. Chromium opens in fullscreen kiosk mode"
 echo
 echo "Commands:"
-echo "  Start all:    sudo systemctl start pokebowl-inventory chromium-kiosk"
-echo "  Stop all:     sudo systemctl stop chromium-kiosk pokebowl-inventory"
-echo "  Backend logs: sudo journalctl -u pokebowl-inventory -f"
-echo "  Status:       sudo systemctl status pokebowl-inventory"
+echo "  Start all:    sudo systemctl start veratori-inventory chromium-kiosk"
+echo "  Stop all:     sudo systemctl stop chromium-kiosk veratori-inventory"
+echo "  Backend logs: sudo journalctl -u veratori-inventory -f"
+echo "  Status:       sudo systemctl status veratori-inventory"
 echo
 echo -e "${YELLOW}Reboot to test auto-start: sudo reboot${NC}"
 echo

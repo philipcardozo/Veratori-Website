@@ -27,6 +27,14 @@ except ImportError:
     AUTH_AVAILABLE = False
     logger.warning("Authentication module not available")
 
+# Import restock manager
+try:
+    from restock_manager import RestockManager
+    RESTOCK_AVAILABLE = True
+except ImportError:
+    RESTOCK_AVAILABLE = False
+    logger.warning("Restock manager module not available")
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,6 +107,15 @@ class VideoStreamServer:
         self._detector_ref = None        # Set via set_detector()
         self._inventory_tracker_ref = None  # Set via set_inventory_tracker()
         
+        # Restock manager
+        self.restock_manager: Optional[RestockManager] = None
+        if RESTOCK_AVAILABLE:
+            try:
+                self.restock_manager = RestockManager()
+                logger.info("Restock manager initialized")
+            except Exception as e:
+                logger.error(f"Failed to initialize restock manager: {e}")
+        
         # Server statistics
         self.frames_streamed = 0
         self.start_time = time.time()
@@ -142,6 +159,22 @@ class VideoStreamServer:
         # Account API
         self.app.router.add_post('/api/account/change-password', self.handle_change_password)
         self.app.router.add_get('/api/account/info', self.handle_account_info)
+        
+        # Restock Mobile App API
+        self.app.router.add_post('/api/restock/login', self.handle_restock_login)
+        self.app.router.add_post('/api/restock/validate', self.handle_restock_validate)
+        self.app.router.add_post('/api/restock/logout', self.handle_restock_logout)
+        self.app.router.add_post('/api/restock/upload', self.handle_restock_upload)
+        self.app.router.add_post('/api/restock/detect', self.handle_restock_detect)
+        self.app.router.add_get('/api/restock/submissions', self.handle_restock_submissions)
+        self.app.router.add_get('/api/restock/notifications', self.handle_restock_notifications)
+        self.app.router.add_get('/api/restock/notifications/count', self.handle_restock_notification_count)
+        self.app.router.add_post('/api/restock/notifications/read', self.handle_restock_notification_read)
+        self.app.router.add_get('/api/restock/photo/{filename}', self.handle_restock_photo)
+        
+        # Manager API for restock moderation
+        self.app.router.add_get('/api/restock/all', self.handle_restock_all)
+        self.app.router.add_post('/api/restock/status', self.handle_restock_status_update)
         
     async def handle_index(self, request: web.Request) -> web.Response:
         """Serve main HTML page"""
@@ -698,7 +731,7 @@ class VideoStreamServer:
             buf.seek(0)
 
             ts = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f"pokebowl_data_{ts}.xlsx"
+            filename = f"veratori_data_{ts}.xlsx"
 
             return web.Response(
                 body=buf.read(),
@@ -1250,6 +1283,384 @@ class VideoStreamServer:
                 *[ws.send_json(message) for ws in self.websockets],
                 return_exceptions=True
             )
+    
+    # ------------------------------------------------------------------
+    # Restock Mobile App API Handlers
+    # ------------------------------------------------------------------
+    
+    async def handle_restock_login(self, request: web.Request) -> web.Response:
+        """Handle restock app login"""
+        if not self.restock_manager:
+            return web.json_response({'success': False, 'message': 'Restock service unavailable'}, status=503)
+        
+        try:
+            data = await request.json()
+            username = data.get('username')
+            password = data.get('password')
+            
+            if not username or not password:
+                return web.json_response({'success': False, 'message': 'Username and password required'}, status=400)
+            
+            # Authenticate using existing auth system
+            if not self.auth_manager:
+                return web.json_response({'success': False, 'message': 'Authentication not configured'}, status=503)
+            
+            if not self.auth_manager.verify_password(username, password):
+                return web.json_response({'success': False, 'message': 'Invalid credentials'}, status=401)
+            
+            # Create session token
+            session_token = self.auth_manager.authenticate(username, password)
+            if not session_token:
+                return web.json_response({'success': False, 'message': 'Authentication failed'}, status=401)
+            
+            # Get user role and franchise (simplified - would come from user database)
+            role = 'employee'  # Would be determined from user database
+            franchise = 'f1'  # Would be determined from user database
+            
+            # Return session info with cookie
+            response = web.json_response({
+                'success': True,
+                'username': username,
+                'role': role,
+                'franchise': franchise,
+            })
+            
+            # Set session cookie
+            is_secure = request.headers.get('X-Forwarded-Proto', '').lower() == 'https'
+            response.set_cookie(
+                self.cookie_name,
+                session_token,
+                max_age=86400,  # 24 hours
+                httponly=True,
+                samesite='Lax',
+                secure=is_secure,
+                path='/'
+            )
+            
+            return response
+        
+        except Exception as e:
+            logger.error(f"Restock login error: {e}")
+            return web.json_response({'success': False, 'message': 'Login failed'}, status=500)
+    
+    async def handle_restock_validate(self, request: web.Request) -> web.Response:
+        """Validate restock session token"""
+        try:
+            # Get session cookie
+            session_token = request.cookies.get(self.cookie_name)
+            if not session_token:
+                return web.json_response({'valid': False}, status=401)
+            
+            if not self.auth_manager:
+                return web.json_response({'valid': False}, status=503)
+            
+            username = self.auth_manager.verify_session(session_token)
+            if username:
+                return web.json_response({'valid': True, 'username': username})
+            else:
+                return web.json_response({'valid': False}, status=401)
+        
+        except Exception as e:
+            logger.error(f"Restock validate error: {e}")
+            return web.json_response({'valid': False}, status=500)
+    
+    async def handle_restock_logout(self, request: web.Request) -> web.Response:
+        """Handle restock app logout"""
+        response = web.json_response({'success': True, 'message': 'Logged out'})
+        response.del_cookie(self.cookie_name, path='/')
+        return response
+    
+    async def handle_restock_detect(self, request: web.Request) -> web.Response:
+        """Run YOLO detection on uploaded photo (for preview)"""
+        if not self.restock_manager:
+            return web.json_response({'success': False, 'message': 'Service unavailable'}, status=503)
+        
+        if not self._detector_ref:
+            return web.json_response({'success': False, 'message': 'Detector not available'}, status=503)
+        
+        try:
+            # Parse multipart form data
+            reader = await request.multipart()
+            photo_data = None
+            
+            async for field in reader:
+                if field.name == 'photo':
+                    photo_data = await field.read()
+                    break
+            
+            if not photo_data:
+                return web.json_response({'success': False, 'message': 'No photo provided'}, status=400)
+            
+            # Convert to numpy array
+            nparr = np.frombuffer(photo_data, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            
+            if img is None:
+                return web.json_response({'success': False, 'message': 'Invalid image'}, status=400)
+            
+            # Run detection
+            detections = self._detector_ref.detect(img)
+            
+            # Count products by class
+            product_counts = {}
+            for det in detections:
+                class_name = det.get('class_name', 'unknown')
+                product_counts[class_name] = product_counts.get(class_name, 0) + 1
+            
+            return web.json_response({
+                'success': True,
+                'detections': detections,
+                'product_counts': product_counts,
+                'total_detections': len(detections)
+            })
+        
+        except Exception as e:
+            logger.error(f"Restock detect error: {e}")
+            return web.json_response({'success': False, 'message': 'Detection failed'}, status=500)
+    
+    async def handle_restock_upload(self, request: web.Request) -> web.Response:
+        """Handle restock photo upload"""
+        if not self.restock_manager:
+            return web.json_response({'success': False, 'message': 'Restock service unavailable'}, status=503)
+        
+        # Check authentication
+        if not await self.check_auth(request):
+            return web.json_response({'success': False, 'message': 'Unauthorized'}, status=401)
+        
+        username = request.get('username', 'unknown')
+        
+        try:
+            # Parse multipart form data
+            reader = await request.multipart()
+            
+            photos = []
+            station = None
+            product = None
+            notes = None
+            device_id = None
+            latitude = None
+            longitude = None
+            detection_results = None
+            franchise_id = 'f1'  # Would come from user database
+            
+            async for field in reader:
+                if field.name.startswith('photo_'):
+                    photo_data = await field.read()
+                    if photo_data:
+                        photos.append(photo_data)
+                elif field.name == 'station':
+                    station = await field.text()
+                elif field.name == 'product':
+                    product = await field.text()
+                elif field.name == 'notes':
+                    notes = await field.text()
+                elif field.name == 'device_id':
+                    device_id = await field.text()
+                elif field.name == 'latitude':
+                    lat_str = await field.text()
+                    latitude = float(lat_str) if lat_str else None
+                elif field.name == 'longitude':
+                    lng_str = await field.text()
+                    longitude = float(lng_str) if lng_str else None
+                elif field.name == 'detection_results':
+                    detection_str = await field.text()
+                    if detection_str:
+                        import json
+                        detection_results = json.loads(detection_str)
+            
+            if not station or not product:
+                return web.json_response({'success': False, 'message': 'Station and product required'}, status=400)
+            
+            if len(photos) < 3:
+                return web.json_response({'success': False, 'message': 'Minimum 3 photos required'}, status=400)
+            
+            # Create submission
+            success, message, submission_id = self.restock_manager.create_submission(
+                employee_username=username,
+                franchise_id=franchise_id,
+                station=station,
+                product=product,
+                notes=notes,
+                device_id=device_id,
+                latitude=latitude,
+                longitude=longitude,
+                photos=photos,
+                detection_results=detection_results
+            )
+            
+            if not success:
+                return web.json_response({'success': False, 'message': message}, status=400)
+            
+            return web.json_response({
+                'success': True,
+                'message': message,
+                'submission_id': submission_id
+            })
+        
+        except Exception as e:
+            logger.error(f"Restock upload error: {e}")
+            return web.json_response({'success': False, 'message': 'Upload failed'}, status=500)
+    
+    async def handle_restock_submissions(self, request: web.Request) -> web.Response:
+        """Get employee's submissions"""
+        if not self.restock_manager:
+            return web.json_response({'success': False, 'submissions': []}, status=503)
+        
+        # Check authentication
+        if not await self.check_auth(request):
+            return web.json_response({'success': False, 'submissions': []}, status=401)
+        
+        username = request.get('username', 'unknown')
+        
+        try:
+            submissions = self.restock_manager.get_employee_submissions(username)
+            return web.json_response({'success': True, 'submissions': submissions})
+        
+        except Exception as e:
+            logger.error(f"Error getting submissions: {e}")
+            return web.json_response({'success': False, 'submissions': []}, status=500)
+    
+    async def handle_restock_notifications(self, request: web.Request) -> web.Response:
+        """Get employee notifications"""
+        if not self.restock_manager:
+            return web.json_response({'success': False, 'notifications': []}, status=503)
+        
+        # Check authentication
+        if not await self.check_auth(request):
+            return web.json_response({'success': False, 'notifications': []}, status=401)
+        
+        username = request.get('username', 'unknown')
+        
+        try:
+            notifications = self.restock_manager.get_notifications(username)
+            formatted = [{
+                'id': n['id'],
+                'title': n['title'],
+                'message': n['message'],
+                'timestamp': n['timestamp_utc'],
+                'read': bool(n['read'])
+            } for n in notifications]
+            
+            return web.json_response({'success': True, 'notifications': formatted})
+        
+        except Exception as e:
+            logger.error(f"Error getting notifications: {e}")
+            return web.json_response({'success': False, 'notifications': []}, status=500)
+    
+    async def handle_restock_notification_count(self, request: web.Request) -> web.Response:
+        """Get unread notification count"""
+        if not self.restock_manager:
+            return web.json_response({'count': 0}, status=503)
+        
+        # Check authentication
+        if not await self.check_auth(request):
+            return web.json_response({'count': 0}, status=401)
+        
+        username = request.get('username', 'unknown')
+        
+        try:
+            count = self.restock_manager.get_notification_count(username)
+            return web.json_response({'count': count})
+        except Exception as e:
+            logger.error(f"Error getting notification count: {e}")
+            return web.json_response({'count': 0}, status=500)
+    
+    async def handle_restock_notification_read(self, request: web.Request) -> web.Response:
+        """Mark notification as read"""
+        if not self.restock_manager:
+            return web.json_response({'success': False}, status=503)
+        
+        try:
+            data = await request.json()
+            notification_id = data.get('notification_id')
+            
+            if not notification_id:
+                return web.json_response({'success': False}, status=400)
+            
+            success = self.restock_manager.mark_notification_read(str(notification_id))
+            return web.json_response({'success': success})
+        except Exception as e:
+            logger.error(f"Error marking notification read: {e}")
+            return web.json_response({'success': False}, status=500)
+    
+    async def handle_restock_photo(self, request: web.Request) -> web.Response:
+        """Serve restock photo file"""
+        if not self.restock_manager:
+            return web.Response(status=404)
+        
+        filename = request.match_info.get('filename')
+        if not filename:
+            return web.Response(status=404)
+        
+        photo_path = self.restock_manager.get_photo_path(filename)
+        if photo_path and photo_path.exists():
+            return web.FileResponse(photo_path)
+        
+        return web.Response(status=404)
+    
+    async def handle_restock_all(self, request: web.Request) -> web.Response:
+        """Get all submissions (manager only)"""
+        if not self.restock_manager:
+            return web.json_response({'success': False, 'submissions': []}, status=503)
+        
+        # Check authentication and manager role
+        if not await self.check_auth(request):
+            return web.json_response({'success': False, 'submissions': []}, status=401)
+        
+        try:
+            # Get query parameters
+            franchise_id = request.query.get('franchise')
+            status = request.query.get('status')
+            employee = request.query.get('employee')
+            
+            submissions = self.restock_manager.get_all_submissions(
+                franchise_id=franchise_id,
+                status=status,
+                employee=employee
+            )
+            
+            return web.json_response({'success': True, 'submissions': submissions})
+        
+        except Exception as e:
+            logger.error(f"Error getting all submissions: {e}")
+            return web.json_response({'success': False, 'submissions': []}, status=500)
+    
+    async def handle_restock_status_update(self, request: web.Request) -> web.Response:
+        """Update submission status (manager only)"""
+        if not self.restock_manager:
+            return web.json_response({'success': False, 'message': 'Service unavailable'}, status=503)
+        
+        # Check authentication
+        if not await self.check_auth(request):
+            return web.json_response({'success': False, 'message': 'Unauthorized'}, status=401)
+        
+        try:
+            data = await request.json()
+            submission_id = data.get('submission_id')
+            status = data.get('status')
+            feedback = data.get('feedback')
+            
+            if not submission_id or not status:
+                return web.json_response({'success': False, 'message': 'Missing required fields'}, status=400)
+            
+            # Get reviewer username
+            username = request.get('username', 'manager')
+            
+            success = self.restock_manager.update_submission_status(
+                submission_id=submission_id,
+                status=status,
+                reviewed_by=username,
+                feedback=feedback
+            )
+            
+            if success:
+                return web.json_response({'success': True, 'message': 'Status updated'})
+            else:
+                return web.json_response({'success': False, 'message': 'Update failed'}, status=400)
+        
+        except Exception as e:
+            logger.error(f"Error updating submission status: {e}")
+            return web.json_response({'success': False, 'message': 'Update failed'}, status=500)
     
     async def start(self):
         """Start the web server"""

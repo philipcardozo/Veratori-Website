@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install systemd service for Poke Bowl Inventory System
+# Install systemd service for Veratori Inventory System
 # Run with sudo: sudo bash install_service.sh
 
 set -e
@@ -10,7 +10,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}=== Poke Bowl Inventory System Service Installation ===${NC}"
+echo -e "${GREEN}=== Veratori Inventory System Service Installation ===${NC}"
 echo
 
 # Check if running as root
@@ -35,11 +35,11 @@ echo -e "${YELLOW}Project directory: $PROJECT_DIR${NC}"
 echo
 
 # Create service file with correct paths
-SERVICE_FILE="/etc/systemd/system/pokebowl-inventory.service"
+SERVICE_FILE="/etc/systemd/system/veratori-inventory.service"
 
 cat > "$SERVICE_FILE" << EOF
 [Unit]
-Description=Poke Bowl Inventory System
+Description=Veratori Inventory System
 After=network.target graphical.target
 Wants=graphical.target
 
@@ -60,7 +60,7 @@ ExecStart=/usr/bin/python3 $PROJECT_DIR/backend/main.py
 # Logging
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=pokebowl-inventory
+SyslogIdentifier=veratori-inventory
 
 # Resource limits (adjust based on requirements)
 MemoryMax=2G
@@ -78,19 +78,19 @@ systemctl daemon-reload
 
 # Enable service
 echo -e "${YELLOW}Enabling service to start on boot...${NC}"
-systemctl enable pokebowl-inventory.service
+systemctl enable veratori-inventory.service
 
 echo
 echo -e "${GREEN}=== Installation Complete ===${NC}"
 echo
 echo "Service commands:"
-echo "  Start:   sudo systemctl start pokebowl-inventory"
-echo "  Stop:    sudo systemctl stop pokebowl-inventory"
-echo "  Restart: sudo systemctl restart pokebowl-inventory"
-echo "  Status:  sudo systemctl status pokebowl-inventory"
-echo "  Logs:    sudo journalctl -u pokebowl-inventory -f"
+echo "  Start:   sudo systemctl start veratori-inventory"
+echo "  Stop:    sudo systemctl stop veratori-inventory"
+echo "  Restart: sudo systemctl restart veratori-inventory"
+echo "  Status:  sudo systemctl status veratori-inventory"
+echo "  Logs:    sudo journalctl -u veratori-inventory -f"
 echo
 echo -e "${YELLOW}The service will start automatically on next boot.${NC}"
-echo -e "${YELLOW}To start now: sudo systemctl start pokebowl-inventory${NC}"
+echo -e "${YELLOW}To start now: sudo systemctl start veratori-inventory${NC}"
 echo
 
