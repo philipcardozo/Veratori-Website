@@ -76,11 +76,14 @@ export default function OrderForm() {
       <div className="space-y-3">
         <p className={`text-xs font-bold uppercase tracking-widest text-center mb-4 ${isDark ? "text-white/30" : "text-black/30"}`}>Select Payment Method</p>
         
-        <button 
+        <button
           onClick={() => handleCheckout("stripe")}
           className="w-full flex items-center justify-between px-6 py-4 bg-[#635BFF] hover:bg-[#5851E6] text-white rounded-xl font-semibold transition-colors shadow-sm cursor-pointer"
         >
-          <span className="flex items-center gap-3"><CreditCard className="w-5 h-5" /> Credit Card (Stripe)</span>
+          <span className="flex items-center gap-3">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M13.976 9.15c-2.172.806-3.356 1.948-3.356 3.378 0 1.578.896 2.649 2.605 2.649.872 0 1.472-.254 1.948-.697l.532-.533V9.6c-.592-.28-1.072-.41-1.729-.41zm2.403.16c.88 0 1.643-.643 1.643-1.423s-.763-1.423-1.643-1.423c-.88 0-1.642.643-1.642 1.423s.763 1.423 1.642 1.423zm6.921-7.883H.97C.433 1.247 0 1.68 0 2.217v19.566c0 .537.433.97.97.97h22.06c.537 0 .97-.433.97-.97V2.217c0-.537-.433-.97-.97-.97z"/></svg>
+            Stripe
+          </span>
           <ArrowRight className="w-4 h-4 opacity-50" />
         </button>
 
@@ -95,11 +98,14 @@ export default function OrderForm() {
           <ArrowRight className="w-4 h-4 opacity-50" />
         </button>
 
-        <button 
+        <button
           onClick={() => handleCheckout("phantom")}
           className="w-full flex items-center justify-between px-6 py-4 bg-[#AB9FF2] hover:bg-[#978AE8] text-white rounded-xl font-semibold transition-colors shadow-sm cursor-pointer"
         >
-          <span className="flex items-center gap-3"><Wallet className="w-5 h-5" /> Phantom Wallet (Solana)</span>
+          <span className="flex items-center gap-3">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><circle cx="12" cy="12" r="10" fill="white" opacity="0.2"/><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+            Phantom Wallet (Bitcoin)
+          </span>
           <ArrowRight className="w-4 h-4 opacity-50" />
         </button>
       </div>

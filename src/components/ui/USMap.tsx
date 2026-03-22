@@ -145,7 +145,7 @@ export default function USMap() {
           <foreignObject x="-88" y="-58" width="176" height="52" className="overflow-visible pointer-events-none">
             <div className="flex flex-col items-center justify-end h-full">
               <span
-                className={`${labelClass} border border-[#2563eb]/35 bg-[#2563eb]/12 ${isDark ? "text-[#93c5fd]" : "text-[#1d4ed8]"}`}
+                className={`${labelClass} border border-[#2563eb]/70 bg-[#2563eb]/85 ${isDark ? "text-[#ffffff]" : "text-[#ffffff]"}`}
               >
                 Researching
               </span>
@@ -167,7 +167,7 @@ export default function USMap() {
           <foreignObject x="-88" y="-58" width="176" height="52" className="overflow-visible pointer-events-none">
             <div className="flex flex-col items-center justify-end h-full">
               <span
-                className={`${labelClass} border border-[#3b82f6]/35 bg-[#3b82f6]/12 ${isDark ? "text-[#93c5fd]" : "text-[#1d4ed8]"}`}
+                className={`${labelClass} border border-[#3b82f6]/70 bg-[#3b82f6]/85 ${isDark ? "text-[#ffffff]" : "text-[#ffffff]"}`}
               >
                 Developing
               </span>
@@ -189,7 +189,7 @@ export default function USMap() {
           <foreignObject x="-88" y="-58" width="176" height="52" className="overflow-visible pointer-events-none">
             <div className="flex flex-col items-center justify-end h-full">
               <span
-                className={`${labelClass} border border-[#eab308]/40 bg-[#eab308]/12 ${isDark ? "text-[#fde047]" : "text-[#a16207]"}`}
+                className={`${labelClass} border border-[#eab308]/70 bg-[#eab308]/85 text-[#ffffff]`}
               >
                 Deploying
               </span>
