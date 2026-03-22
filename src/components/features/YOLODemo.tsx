@@ -102,8 +102,10 @@ export default function YOLODemo() {
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    // Styling
-    const sage = "#5F974F";
+    // Styling - using CSS variable equivalent colors
+    const SAGE_COLOR = "#7BAF7B"; // --color-sage from brand palette
+    const TEXT_COLOR = "#ffffff";
+    const BG_DARK = "rgba(0,0,0,0.5)";
     ctx.font = "16px sans-serif";
     ctx.textBaseline = "top";
 
@@ -111,25 +113,25 @@ export default function YOLODemo() {
       const [x, y, width, height] = prediction.bbox;
 
       // Draw bounding box
-      ctx.strokeStyle = sage;
+      ctx.strokeStyle = SAGE_COLOR;
       ctx.lineWidth = 4;
       ctx.strokeRect(x, y, width, height);
 
       // Draw label background
-      ctx.fillStyle = sage;
+      ctx.fillStyle = SAGE_COLOR;
       const textWidth = ctx.measureText(prediction.class).width;
       ctx.fillRect(x, y, textWidth + 10, 24);
 
       // Draw label text
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = TEXT_COLOR;
       ctx.fillText(prediction.class, x + 5, y + 4);
 
       // Confidence indicator
-      ctx.fillStyle = "rgba(0,0,0,0.5)";
+      ctx.fillStyle = BG_DARK;
       const confText = `${Math.round(prediction.score * 100)}%`;
       const confWidth = ctx.measureText(confText).width;
       ctx.fillRect(x, y + 24, confWidth + 10, 20);
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = TEXT_COLOR;
       ctx.font = "12px sans-serif";
       ctx.fillText(confText, x + 5, y + 27);
       ctx.font = "16px sans-serif";
