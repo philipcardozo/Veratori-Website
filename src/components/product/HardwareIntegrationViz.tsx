@@ -64,48 +64,48 @@ export default function HardwareIntegrationViz() {
   const { isDark } = useTheme();
   const [hoveredModule, setHoveredModule] = useState<string | null>(null);
 
-  const strokeMuted = isDark ? “rgba(255,255,255,0.08)” : “rgba(0,0,0,0.06)”;
-  const strokeActive = “#7dd87a”;
-  const fillMod = isDark ? “rgba(255,255,255,0.04)” : “rgba(0,0,0,0.02)”;
-  const fillModRing = isDark ? “rgba(125,216,122,0.15)” : “rgba(91,151,79,0.1)”;
+  const strokeMuted = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
+  const strokeActive = "#7dd87a";
+  const fillMod = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)";
+  const fillModRing = isDark ? "rgba(125,216,122,0.15)" : "rgba(91,151,79,0.1)";
 
   return (
-    <div className=”relative w-full”>
+    <div className="relative w-full">
       {/* Main SVG Diagram */}
-      <div className=”relative h-full min-h-[320px] w-full p-4 md:p-8”>
+      <div className="relative h-full min-h-[320px] w-full p-4 md:p-8">
         <svg
           viewBox={`0 0 ${VB} ${VB}`}
-          className=”h-full w-full max-h-[min(100%,460px)] mx-auto”
-          fill=”none”
-          xmlns=”http://www.w3.org/2000/svg”
+          className="h-full w-full max-h-[min(100%,460px)] mx-auto"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
           aria-hidden
         >
           <defs>
             {/* Glow filter for connections */}
-            <filter id=”hw-glow” x=”-40%” y=”-40%” width=”180%” height=”180%”>
-              <feGaussianBlur stdDeviation=”2.5” result=”b” />
+            <filter id="hw-glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="2.5" result="b" />
               <feMerge>
-                <feMergeNode in=”b” />
-                <feMergeNode in=”SourceGraphic” />
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
 
             {/* Gradient for active lines */}
-            <linearGradient id=”hw-line” x1=”0%” y1=”0%” x2=”100%” y2=”100%”>
-              <stop offset=”0%” stopColor={strokeActive} stopOpacity=”0.2” />
-              <stop offset=”50%” stopColor={strokeActive} stopOpacity=”1” />
-              <stop offset=”100%” stopColor={strokeActive} stopOpacity=”0.2” />
+            <linearGradient id="hw-line" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={strokeActive} stopOpacity="0.2" />
+              <stop offset="50%" stopColor={strokeActive} stopOpacity="1" />
+              <stop offset="100%" stopColor={strokeActive} stopOpacity="0.2" />
             </linearGradient>
 
             {/* Radial glow for center */}
-            <radialGradient id=”center-glow” cx=”50%” cy=”50%” r=”60%”>
-              <stop offset=”0%” stopColor={strokeActive} stopOpacity=”0.15” />
-              <stop offset=”100%” stopColor={strokeActive} stopOpacity=”0” />
+            <radialGradient id="center-glow" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stopColor={strokeActive} stopOpacity="0.15" />
+              <stop offset="100%" stopColor={strokeActive} stopOpacity="0" />
             </radialGradient>
           </defs>
 
           {/* Background glow at center */}
-          <circle cx={CX} cy={CY} r=”95” fill=”url(#center-glow)” />
+          <circle cx={CX} cy={CY} r="95" fill="url(#center-glow)" />
 
           {/* Connection paths: faint track + traveling pulse */}
           {modules.map((m, i) => {
@@ -118,31 +118,31 @@ export default function HardwareIntegrationViz() {
                 <path
                   d={d}
                   stroke={strokeMuted}
-                  strokeWidth=”2”
-                  strokeLinecap=”round”
-                  fill=”none”
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  fill="none"
                   opacity={isHovered ? 0.25 : 0.1}
-                  className=”transition-opacity duration-300”
+                  className="transition-opacity duration-300"
                 />
                 {/* Animated pulse line */}
                 <path
                   d={d}
-                  stroke=”url(#hw-line)”
-                  strokeWidth=”3”
-                  strokeLinecap=”round”
-                  fill=”none”
+                  stroke="url(#hw-line)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  fill="none"
                   pathLength={1}
-                  strokeDasharray=”0.1 0.9”
-                  filter=”url(#hw-glow)”
+                  strokeDasharray="0.1 0.9"
+                  filter="url(#hw-glow)"
                   opacity={isHovered ? 1 : 0.6}
-                  className=”transition-opacity duration-300”
+                  className="transition-opacity duration-300"
                 >
                   <animate
-                    attributeName=”stroke-dashoffset”
-                    from=”1”
-                    to=”0”
-                    dur=”4s”
-                    repeatCount=”indefinite”
+                    attributeName="stroke-dashoffset"
+                    from="1"
+                    to="0"
+                    dur="4s"
+                    repeatCount="indefinite"
                     begin={`${delay}s`}
                   />
                 </path>
@@ -157,12 +157,12 @@ export default function HardwareIntegrationViz() {
             width={chassis.w}
             height={chassis.h}
             rx={chassis.r}
-            fill={isDark ? “rgba(255,255,255,0.06)” : “rgba(255,255,255,0.9)”}
-            stroke={isDark ? “rgba(125,216,122,0.25)” : “rgba(91,151,79,0.3)”}
-            strokeWidth=”1.5”
+            fill={isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.9)"}
+            stroke={isDark ? "rgba(125,216,122,0.25)" : "rgba(91,151,79,0.3)"}
+            strokeWidth="1.5"
             initial={{ opacity: 0.8 }}
             animate={{ opacity: [0.85, 1, 0.85] }}
-            transition={{ duration: 5, repeat: Infinity, ease: “easeInOut” }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           />
 
           {/* Inner compute block */}
@@ -172,28 +172,28 @@ export default function HardwareIntegrationViz() {
             width={96}
             height={64}
             rx={10}
-            fill={isDark ? “rgba(125,216,122,0.08)” : “rgba(91,151,79,0.08)”}
-            stroke={isDark ? “rgba(125,216,122,0.35)” : “rgba(91,151,79,0.4)”}
-            strokeWidth=”1.5”
-            animate={{ boxShadow: hoveredModule ? “0 0 20px rgba(125,216,122,0.3)” : “0 0 0px rgba(125,216,122,0)” }}
+            fill={isDark ? "rgba(125,216,122,0.08)" : "rgba(91,151,79,0.08)"}
+            stroke={isDark ? "rgba(125,216,122,0.35)" : "rgba(91,151,79,0.4)"}
+            strokeWidth="1.5"
+            animate={{ boxShadow: hoveredModule ? "0 0 20px rgba(125,216,122,0.3)" : "0 0 0px rgba(125,216,122,0)" }}
             transition={{ duration: 0.3 }}
           />
           <text
             x={CX}
             y={CY - 4}
-            textAnchor=”middle”
+            textAnchor="middle"
             fill={strokeActive}
-            className=”font-mono font-bold”
-            style={{ fontSize: 13, letterSpacing: “0.2em” }}
+            className="font-mono font-bold"
+            style={{ fontSize: 13, letterSpacing: "0.2em" }}
           >
             JETSON
           </text>
           <text
             x={CX}
             y={CY + 16}
-            textAnchor=”middle”
-            fill=”currentColor”
-            className={isDark ? “text-white/40” : “text-black/40”}
+            textAnchor="middle"
+            fill="currentColor"
+            className={isDark ? "text-white/40" : "text-black/40"}
             style={{ fontSize: 10 }}
           >
             EDGE
@@ -207,16 +207,16 @@ export default function HardwareIntegrationViz() {
                 key={m.id}
                 onMouseEnter={() => setHoveredModule(m.id)}
                 onMouseLeave={() => setHoveredModule(null)}
-                className=”cursor-pointer”
+                className="cursor-pointer"
               >
                 {/* Outer ring */}
                 <motion.circle
                   cx={m.x}
                   cy={m.y}
-                  r=”32”
+                  r="32"
                   fill={fillMod}
                   stroke={fillModRing}
-                  strokeWidth=”1”
+                  strokeWidth="1"
                   animate={{
                     r: isHovered ? 36 : 32,
                     stroke: isHovered ? strokeActive : fillModRing,
@@ -229,7 +229,7 @@ export default function HardwareIntegrationViz() {
                 <motion.circle
                   cx={m.x}
                   cy={m.y}
-                  r=”7”
+                  r="7"
                   fill={strokeActive}
                   animate={{
                     r: isHovered ? 10 : 7,
@@ -239,7 +239,7 @@ export default function HardwareIntegrationViz() {
                     r: { duration: 0.3 },
                     opacity: isHovered
                       ? { duration: 0.3 }
-                      : { duration: 2.2, repeat: Infinity, delay: i * 0.4, ease: “easeInOut” },
+                      : { duration: 2.2, repeat: Infinity, delay: i * 0.4, ease: "easeInOut" },
                   }}
                 />
 
@@ -248,10 +248,10 @@ export default function HardwareIntegrationViz() {
                   <motion.circle
                     cx={m.x}
                     cy={m.y}
-                    r=”32”
-                    fill=”none”
+                    r="32"
+                    fill="none"
                     stroke={strokeActive}
-                    strokeWidth=”0.5”
+                    strokeWidth="0.5"
                     initial={{ r: 32, opacity: 1 }}
                     animate={{ r: 50, opacity: 0 }}
                     transition={{ duration: 0.8, repeat: Infinity }}
@@ -267,10 +267,10 @@ export default function HardwareIntegrationViz() {
               key={`${m.id}-label`}
               x={m.x}
               y={m.y + 52}
-              textAnchor=”middle”
-              fill=”currentColor”
-              className={isDark ? “text-white/70 font-semibold” : “text-black/70 font-semibold”}
-              style={{ fontSize: 11, letterSpacing: “0.05em” }}
+              textAnchor="middle"
+              fill="currentColor"
+              className={isDark ? "text-white/70 font-semibold" : "text-black/70 font-semibold"}
+              style={{ fontSize: 11, letterSpacing: "0.05em" }}
             >
               {m.label}
             </text>
@@ -279,7 +279,7 @@ export default function HardwareIntegrationViz() {
       </div>
 
       {/* Info Cards Below Diagram */}
-      <div className=”grid grid-cols-2 md:grid-cols-4 gap-3 px-4 md:px-8 pb-6”>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-4 md:px-8 pb-6">
         {modules.map((m) => {
           const Icon = m.icon;
           const isHovered = hoveredModule === m.id;
@@ -292,32 +292,32 @@ export default function HardwareIntegrationViz() {
                 y: isHovered ? -4 : 0,
                 backgroundColor: isHovered
                   ? isDark
-                    ? “rgba(125,216,122,0.1)”
-                    : “rgba(91,151,79,0.08)”
+                    ? "rgba(125,216,122,0.1)"
+                    : "rgba(91,151,79,0.08)"
                   : isDark
-                    ? “rgba(255,255,255,0.03)”
-                    : “rgba(0,0,0,0.01)”,
+                    ? "rgba(255,255,255,0.03)"
+                    : "rgba(0,0,0,0.01)",
               }}
               transition={{ duration: 0.3 }}
               className={`p-3 md:p-4 rounded-lg border backdrop-blur-sm cursor-pointer transition-all ${
                 isHovered
                   ? isDark
-                    ? “border-sage/40”
-                    : “border-sage/30”
+                    ? "border-sage/40"
+                    : "border-sage/30"
                   : isDark
-                    ? “border-white/10”
-                    : “border-black/5”
+                    ? "border-white/10"
+                    : "border-black/5"
               }`}
             >
               <motion.div
-                animate={{ color: isHovered ? strokeActive : “currentColor” }}
+                animate={{ color: isHovered ? strokeActive : "currentColor" }}
                 transition={{ duration: 0.3 }}
-                className=”mb-2”
+                className="mb-2"
               >
-                <Icon className=”w-5 h-5 md:w-6 md:h-6” />
+                <Icon className="w-5 h-5 md:w-6 md:h-6" />
               </motion.div>
-              <p className=”text-xs md:text-sm font-semibold mb-1”>{m.spec}</p>
-              <p className={`text-[10px] md:text-xs leading-tight ${isDark ? “text-white/50” : “text-black/50”}`}>
+              <p className="text-xs md:text-sm font-semibold mb-1">{m.spec}</p>
+              <p className={`text-[10px] md:text-xs leading-tight ${isDark ? "text-white/50" : "text-black/50"}`}>
                 {m.detail}
               </p>
             </motion.div>
@@ -328,7 +328,7 @@ export default function HardwareIntegrationViz() {
       {/* Footer text */}
       <p
         className={`px-4 md:px-8 text-center text-[10px] font-mono uppercase tracking-[0.25em] pb-4 ${
-          isDark ? “text-white/30” : “text-black/35”
+          isDark ? "text-white/30" : "text-black/35"
         }`}
       >
         Live Integration · Real-time Data Flow
