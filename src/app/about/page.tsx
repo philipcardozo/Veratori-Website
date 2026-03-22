@@ -71,10 +71,10 @@ function Story() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             {[
-              { icon: Target, title: "Precision Intelligence", text: "99.2% detection accuracy in complex, low-light environments." },
-              { icon: Globe, title: "Global Impact", text: "3.2M+ lbs of annual food waste prevented across our partners." },
+              { id: "precision", icon: Target, title: "Precision Intelligence", text: "99.2% detection accuracy in complex, low-light environments." },
+              { id: "global", icon: Globe, title: "Global Impact", text: "3.2M+ lbs of annual food waste prevented across our partners." },
             ].map(item => (
-              <div key={item.title}>
+              <div key={item.id}>
                 <item.icon className="w-8 h-8 md:w-10 md:h-10 text-sage mb-4" />
                 <h4 className="font-bold mb-2 text-lg md:text-xl">{item.title}</h4>
                 <p className={`text-base md:text-lg ${isDark ? "text-white/50" : "text-black/50"}`}>{item.text}</p>

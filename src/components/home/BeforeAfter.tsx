@@ -35,14 +35,14 @@ export default function BeforeAfter() {
             
             <ul className="space-y-6">
               {[
-                "90 minutes per shift spent counting boxes and weighing prep.",
-                "High error rate due to human fatigue and low-light conditions.",
-                "Inventory is only 'accurate' for the five minutes after the count.",
-                "Zero data on intra-day waste, theft, or door-open duration.",
-              ].map((item, i) => (
-                <li key={i} className="flex gap-4">
+                { id: "manual-1", text: "90 minutes per shift spent counting boxes and weighing prep." },
+                { id: "manual-2", text: "High error rate due to human fatigue and low-light conditions." },
+                { id: "manual-3", text: "Inventory is only 'accurate' for the five minutes after the count." },
+                { id: "manual-4", text: "Zero data on intra-day waste, theft, or door-open duration." },
+              ].map((item) => (
+                <li key={item.id} className="flex gap-4">
                   <span className="w-1 h-1 bg-red-500/40 rounded-full mt-2.5 shrink-0" />
-                  <p className={`text-base ${isDark ? "text-white/50" : "text-black/50"}`}>{item}</p>
+                  <p className={`text-base ${isDark ? "text-white/50" : "text-black/50"}`}>{item.text}</p>
                 </li>
               ))}
             </ul>
@@ -66,14 +66,14 @@ export default function BeforeAfter() {
             
             <ul className="space-y-6">
               {[
-                "Zero minutes per shift. Tracking happens 24/7 in the background.",
-                "99.2% accuracy using calibrated LiDAR and YOLO models.",
-                "Live dashboard shows exact quantities on hand at any second.",
-                "Instant alerts for open doors, low stock, or expiring labels.",
-              ].map((item, i) => (
-                <li key={i} className="flex gap-4">
+                { id: "veratori-1", text: "Zero minutes per shift. Tracking happens 24/7 in the background." },
+                { id: "veratori-2", text: "99.2% accuracy using calibrated LiDAR and YOLO models." },
+                { id: "veratori-3", text: "Live dashboard shows exact quantities on hand at any second." },
+                { id: "veratori-4", text: "Instant alerts for open doors, low stock, or expiring labels." },
+              ].map((item) => (
+                <li key={item.id} className="flex gap-4">
                   <CheckCircle2 className="w-4 h-4 text-sage mt-1 shrink-0" />
-                  <p className={`text-base font-medium ${isDark ? "text-white/80" : "text-black/80"}`}>{item}</p>
+                  <p className={`text-base font-medium ${isDark ? "text-white/80" : "text-black/80"}`}>{item.text}</p>
                 </li>
               ))}
             </ul>

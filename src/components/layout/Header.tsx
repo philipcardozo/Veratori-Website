@@ -67,6 +67,7 @@ export default function Header() {
             {/* ── Desktop Navigation (center) ── */}
             <nav
               className="hidden md:flex items-center gap-8"
+              role="navigation"
               aria-label="Main navigation"
             >
               {navLinks.filter(link => !["Home", "Contact"].includes(link.label)).map((link) => {
@@ -109,6 +110,7 @@ export default function Header() {
                   ? "bg-sage text-white hover:bg-sage-light"
                   : "bg-sage text-white hover:opacity-90 shadow-lg"
                   }`}
+                aria-label="Contact us - open contact page"
               >
                 Contact
               </Link>
