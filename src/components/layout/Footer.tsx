@@ -1,38 +1,69 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { useTheme } from "@/components/ui/ThemeProvider";
-import { MapPin } from "lucide-react";
+import { MapPin, ArrowRight } from "lucide-react";
 
-const footerLinks = {
-  Product: [
-    { label: "Overview", href: "/product" },
-    { label: "How It Works", href: "/product#how-it-works" },
-    { label: "Key Capabilities", href: "/product#capabilities" },
-    { label: "Pricing", href: "/pricing" },
-  ],
-  About: [
-    { label: "Our Story", href: "/about" },
-    { label: "The Team", href: "/about#team" },
-    { label: "Scale & Expansion", href: "/about#scale" },
-  ],
-  Impact: [
-    { label: "Our Mission", href: "/mission" },
-    { label: "Operating Principles", href: "/mission#principles" },
-    { label: "Research", href: "/mission#research" },
-  ],
-  Pricing: [
-    { label: "Plans", href: "/pricing" },
-    { label: "Order Beta Access", href: "/pricing#order" },
-  ],
-  Company: [
-    { label: "Contact", href: "/contact" },
-    { label: "Legal Rights", href: "/legal" },
-  ],
-};
+/* ─── Link columns ─── */
+const footerColumns = [
+  {
+    heading: "Product",
+    links: [
+      { label: "Overview", href: "/product" },
+      { label: "How It Works", href: "/product#how-it-works" },
+      { label: "Capabilities", href: "/product#capabilities" },
+      { label: "Hardware Specs", href: "/product#hardware" },
+    ],
+  },
+  {
+    heading: "Impact",
+    links: [
+      { label: "Our Mission", href: "/mission" },
+      { label: "Data Pipeline", href: "/mission#pipeline" },
+      { label: "ROI Calculator", href: "/mission#roi" },
+      { label: "Research", href: "/mission#research" },
+    ],
+  },
+  {
+    heading: "About",
+    links: [
+      { label: "Our Story", href: "/about" },
+      { label: "The Team", href: "/about#team" },
+      { label: "Scale & Reach", href: "/about#scale" },
+      { label: "Careers", href: "/about#hiring" },
+    ],
+  },
+  {
+    heading: "Resources",
+    links: [
+      { label: "Blog", href: "/blog" },
+      { label: "LiDAR Whitepaper", href: "/documents/lidar-paper.pdf" },
+      { label: "Documentation", href: "/resources" },
+      { label: "Press / Media", href: "/press" },
+    ],
+  },
+  {
+    heading: "Company",
+    links: [
+      { label: "Contact", href: "/contact" },
+      { label: "Partners", href: "/partners" },
+      { label: "Legal", href: "/legal" },
+      { label: "Privacy Policy", href: "/privacy" },
+    ],
+  },
+  {
+    heading: "Pricing",
+    links: [
+      { label: "Beta Access", href: "/pricing" },
+      { label: "Order Now", href: "/pricing#order" },
+      { label: "FAQ", href: "/pricing#faq" },
+    ],
+  },
+];
 
+/* ─── Social icons ─── */
 const socialIcons = [
   {
     label: "LinkedIn",
@@ -51,43 +82,45 @@ const socialIcons = [
   },
 ];
 
-const locations = [
-  { city: "New York City", state: "NY", hq: false },
-  { city: "Atlanta", state: "GA", hq: false },
-  { city: "Austin", state: "TX", hq: true },
-];
-
 export default function Footer() {
-  const { isDark } = useTheme();
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) setSubscribed(true);
+  };
+
   return (
     <footer className="relative border-t bg-midnight border-white/6 text-white">
-      <div className="w-full mx-auto px-6 sm:px-10 lg:px-12 pt-16 pb-12">
+      <div className="w-full mx-auto px-6 sm:px-10 lg:px-12 pt-16 pb-8">
 
-        <div className="flex flex-col md:flex-row justify-between gap-12 mb-[clamp(48px,5vw,64px)]">
+        {/* ── Row 1: Brand + Newsletter ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="flex flex-col lg:flex-row justify-between gap-10 pb-12 border-b border-white/[0.06]"
+        >
           {/* Brand */}
-          <motion.div
-            className="max-w-xs"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-          >
-            <Link href="/" className="flex items-center mb-8">
+          <div className="max-w-xs">
+            <Link href="/" className="flex items-center mb-6">
               <Image
                 src="/images/Logos/Brand Identity/Logos/Logo_name_dark-nobg.png"
-                alt="Veratori Logo"
-                width={200}
-                height={50}
-                className="h-10 sm:h-12 w-auto object-contain"
+                alt="Veratori"
+                width={180}
+                height={45}
+                className="h-10 w-auto object-contain"
               />
             </Link>
-            <p className="text-[clamp(14px,1vw,16px)] leading-relaxed text-white/60 mb-6">
-              Veratori automates inventory management for food service operators using on-device computer vision.
+            <p className="text-sm leading-relaxed text-white/55 mb-5">
+              Veratori automates inventory management for food service operators using on-device computer vision and LiDAR depth sensing.
             </p>
-            <p className="text-base font-medium text-white/50">
-              <a href="mailto:veratori@veratori.com" className="hover:text-white transition-colors">veratori@veratori.com</a>
-            </p>
-            <div className="flex gap-4 mt-6 mb-6">
+            <a href="mailto:contact@veratori.com" className="text-sm font-medium text-white/50 hover:text-white transition-colors">
+              contact@veratori.com
+            </a>
+            <div className="flex gap-3 mt-5">
               {socialIcons.map((s) => (
                 <motion.a
                   key={s.label}
@@ -96,61 +129,124 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors bg-white/5 hover:bg-white/10 text-white/50 hover:text-white"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors bg-white/5 hover:bg-white/10 text-white/50 hover:text-white"
                   aria-label={s.label}
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d={s.path} /></svg>
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d={s.path} />
+                  </svg>
                 </motion.a>
               ))}
             </div>
-            {/* Locations below social icons */}
-            <div className="flex flex-wrap gap-4">
-              {locations.map((loc) => (
-                <div key={loc.city} className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-sage shrink-0" />
-                  <span className="text-sm text-white/50">
-                    {loc.city}, {loc.state}
-                    {loc.hq && <span className="ml-1.5 text-xs font-semibold text-sage bg-sage/10 px-1.5 py-0.5 rounded">HQ</span>}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+          </div>
 
-          {/* Link columns */}
-          <motion.div
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-10 gap-y-10 md:mr-4"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          >
-            {Object.entries(footerLinks).map(([heading, links]) => (
-              <div key={heading}>
-                <h4 className="font-bold text-[clamp(14px,1vw,16px)] mb-6 text-white">{heading}</h4>
-                <ul className="space-y-4">
-                  {links.map((link) => (
-                    <li key={link.label}>
-                      <Link href={link.href} className="text-[clamp(13px,0.9vw,15px)] font-medium transition-colors text-white/50 hover:text-white">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </motion.div>
-        </div>
+          {/* Newsletter */}
+          <div className="lg:max-w-sm w-full">
+            <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">Newsletter</p>
+            <h4 className="text-base font-bold text-white mb-1">Stay in the loop</h4>
+            <p className="text-sm text-white/40 mb-4">Monthly updates on food-tech innovation and Veratori news.</p>
+            {subscribed ? (
+              <motion.p
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-sm font-semibold text-sage"
+              >
+                You&apos;re subscribed! Thanks for joining.
+              </motion.p>
+            ) : (
+              <form onSubmit={handleSubscribe} className="flex gap-2">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@restaurant.com"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-white/25 outline-none focus:border-sage/50 transition-colors"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2.5 rounded-xl bg-sage text-white font-bold text-sm hover:bg-sage-light transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  Subscribe <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </form>
+            )}
+          </div>
+        </motion.div>
 
+        {/* ── Row 2: Link Columns ── */}
         <motion.div
-          className="border-t pt-8 border-white/[0.06]"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-8 gap-y-10 py-12 border-b border-white/[0.06]"
+        >
+          {footerColumns.map(({ heading, links }) => (
+            <div key={heading}>
+              <h4 className="font-bold text-sm mb-5 text-white">{heading}</h4>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-[13px] font-medium text-white/45 hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* ── Row 3: Locations ── */}
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-20px" }}
-          transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
+          className="flex flex-wrap gap-6 py-8 border-b border-white/[0.06]"
         >
-          <div className="flex justify-center sm:justify-start items-center">
-            <p className="text-[clamp(12px,0.9vw,14px)] text-white/40">&copy; {new Date().getFullYear()} Veratori Inc. All rights reserved.</p>
+          {[
+            { city: "Austin, TX", label: "HQ", hq: true },
+            { city: "Atlanta, GA", label: "", hq: false },
+            { city: "New York, NY", label: "", hq: false },
+          ].map((loc) => (
+            <div key={loc.city} className="flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 text-sage shrink-0" />
+              <span className="text-sm text-white/50">{loc.city}</span>
+              {loc.hq && (
+                <span className="text-[10px] font-bold text-sage bg-sage/10 px-1.5 py-0.5 rounded">HQ</span>
+              )}
+            </div>
+          ))}
+        </motion.div>
+
+        {/* ── Row 4: Bottom bar ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-6"
+        >
+          <p className="text-xs text-white/35">
+            &copy; {new Date().getFullYear()} Veratori Inc. All rights reserved. &nbsp;·&nbsp; Built with precision in Austin, TX 🌿
+          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/legal" className="text-xs text-white/35 hover:text-white/70 transition-colors">Legal</Link>
+            <Link href="/privacy" className="text-xs text-white/35 hover:text-white/70 transition-colors">Privacy</Link>
+            <button
+              onClick={() => {
+                localStorage.removeItem("cookie-consent");
+                window.location.reload();
+              }}
+              className="text-xs text-white/35 hover:text-white/70 transition-colors cursor-pointer"
+            >
+              Cookie Settings
+            </button>
           </div>
         </motion.div>
       </div>
