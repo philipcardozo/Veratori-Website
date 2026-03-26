@@ -108,13 +108,13 @@ function Research() {
           </motion.div>
 
           {/* Interactive Paper Preview */}
+          <div style={{ perspective: "900px" }} className="relative w-full">
           <motion.div
             initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
             whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, type: "spring" }}
             className="relative w-full"
-            style={{ perspective: 900 }}
           >
             <motion.div
               onClick={() => setIsPaperOpen(true)}
@@ -168,7 +168,7 @@ function Research() {
               <div className="border-b border-sage/30 pb-6 mb-8">
                 <div className="flex justify-between items-start mb-4 relative">
                   <motion.div
-                    variants={{ idle: { width: "12%" }, hovered: { width: "82%" } }}
+                    variants={{ idle: { width: "12%" }, hovered: { width: "96%" } }}
                     transition={{ type: "spring", stiffness: 200, damping: 18 }}
                     className="h-1 rounded-full bg-sage absolute top-[11px] left-0"
                   />
@@ -229,6 +229,7 @@ function Research() {
               </div>
             </motion.div>
           </motion.div>
+          </div>
         </div>
       </div>
 
