@@ -101,6 +101,8 @@ export default function Footer() {
           src="/images/assets/nyc-skyline.jpg"
           alt=""
           fill
+          priority
+          sizes="100vw"
           className="object-cover object-center"
           aria-hidden="true"
         />
