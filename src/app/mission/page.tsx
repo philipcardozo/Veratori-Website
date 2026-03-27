@@ -257,10 +257,10 @@ function Research() {
                 <div className="flex items-center gap-4">
                   <div className="relative h-8 w-32">
                     <Image
-                      src="/images/Logos/Brand Identity/Logos/Logo_name_white_nobg.png"
+                      src="/images/Logos/Brand Identity/Logos/Logo_name_dark-nobg.png"
                       alt="Veratori"
                       fill
-                      className="object-contain invert"
+                      className="object-contain"
                     />
                   </div>
                   <div className="h-4 w-px bg-gray-200" />
