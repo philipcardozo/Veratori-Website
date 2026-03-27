@@ -46,6 +46,19 @@ const team = [
   },
 ];
 
+function ImagePlaceholder({ text, className = "" }: { text: string; className?: string }) {
+  const { isDark } = useTheme();
+  return (
+    <div className={`flex items-center justify-center border-2 border-dashed rounded-xl p-6 ${
+      isDark ? "border-white/10 bg-white/[0.02]" : "border-black/10 bg-black/[0.02]"
+    } ${className}`}>
+      <p className={`text-xs text-center leading-relaxed italic ${isDark ? "text-white/25" : "text-black/25"}`}>
+        {text}
+      </p>
+    </div>
+  );
+}
+
 /* ═══════════════════ ORIGIN & MISSION ═══════════════════ */
 function Story() {
   const { isDark } = useTheme();
@@ -269,8 +282,20 @@ export default function AboutPage() {
       </section>
 
       <Story />
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <ImagePlaceholder
+          text="Veratori team at their engineering workspace — hardware prototypes on desk, multiple monitors showing computer vision output, collaborative work environment"
+          className="h-64 w-full"
+        />
+      </div>
       <Roadmap />
       <Team />
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <ImagePlaceholder
+          text="Company culture shot — team gathered around a whiteboard session, casual but focused, Veratori branding visible in background"
+          className="h-48 w-full"
+        />
+      </div>
 
       {/* Contact CTA */}
       <section className={`py-24 border-t ${isDark ? "border-white/5 bg-[#0A1220]" : "border-black/5 bg-[#F4F9F6]"}`}>

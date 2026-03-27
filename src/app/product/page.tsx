@@ -45,6 +45,25 @@ const capabilities = [
   },
 ];
 
+function ImagePlaceholder({ text, className = "" }: { text: string; className?: string }) {
+  const { isDark } = useTheme();
+  return (
+    <div className={`flex items-center justify-center border-2 border-dashed rounded-xl p-6 ${
+      isDark ? "border-white/10 bg-white/[0.02]" : "border-black/10 bg-black/[0.02]"
+    } ${className}`}>
+      <p className={`text-xs text-center leading-relaxed italic ${isDark ? "text-white/25" : "text-black/25"}`}>
+        {text}
+      </p>
+    </div>
+  );
+}
+
+const stepImages: Record<string, string> = {
+  "01": "Technician mounting V1 Sensor unit to walk-in cooler ceiling — ceiling bracket installation, compact white hardware unit, 30-minute install process",
+  "02": "Veratori calibration interface — ML model training progress on edge device, item recognition bounding boxes overlaid on cooler shelves during 12-hour learning phase",
+  "03": "Restaurant manager reviewing Veratori dashboard on smartphone — morning digest email, live stock levels, low-stock alert notification visible",
+};
+
 export default function ProductPage() {
   const { isDark } = useTheme();
 
@@ -90,6 +109,7 @@ export default function ProductPage() {
                 transition={{ delay: i * 0.1, duration: 0.45 }}
                 className={`p-8 rounded-xl border relative ${isDark ? "bg-white/5 border-white/10" : "bg-mist border-black/5"}`}
               >
+                <ImagePlaceholder text={stepImages[step.n]} className="h-36 w-full mb-4" />
                 <span className={`text-5xl font-black tracking-wider mb-6 block text-sage`}>{step.n}</span>
                 <h3 className="text-xl font-bold mb-3">{step.title}</h3>
                 <p className={`text-base leading-relaxed ${isDark ? "text-white/50" : "text-black/50"}`}>{step.body}</p>
@@ -155,6 +175,10 @@ export default function ProductPage() {
                 </div>
               ))}
             </div>
+            <ImagePlaceholder
+              text="V1 Sensor unit detailed product photography — angled hero shot showing IP67 housing, LiDAR aperture, RGB camera module, and NVIDIA Jetson compute module visible through ventilated panel"
+              className="h-56 w-full mt-12"
+            />
           </div>
           <div className={`aspect-square rounded-2xl relative overflow-hidden border ${isDark ? "bg-white/5 border-white/10" : "bg-mist border-black/5"}`}>
             <div className="absolute inset-0 flex items-center justify-center p-2">

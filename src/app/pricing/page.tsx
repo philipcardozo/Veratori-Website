@@ -48,6 +48,19 @@ function FAQItem({ faq }: { faq: { q: string; a: string } }) {
   );
 }
 
+function ImagePlaceholder({ text, className = "" }: { text: string; className?: string }) {
+  const { isDark } = useTheme();
+  return (
+    <div className={`flex items-center justify-center border-2 border-dashed rounded-xl p-6 ${
+      isDark ? "border-white/10 bg-white/[0.02]" : "border-black/10 bg-black/[0.02]"
+    } ${className}`}>
+      <p className={`text-xs text-center leading-relaxed italic ${isDark ? "text-white/25" : "text-black/25"}`}>
+        {text}
+      </p>
+    </div>
+  );
+}
+
 export default function PricingPage() {
   const { isDark } = useTheme();
 
@@ -73,6 +86,13 @@ export default function PricingPage() {
           </motion.div>
         </div>
       </section>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <ImagePlaceholder
+          text="V1 Sensor unit — clean product shot on white surface, NVIDIA Jetson Orin module visible, IP67 housing with LiDAR aperture and RGB camera lens, Veratori logo on front panel"
+          className="w-full h-64"
+        />
+      </div>
 
       {/* ── Pricing & FAQ ── */}
       <section className={`py-28`}>

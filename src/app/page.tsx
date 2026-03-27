@@ -9,6 +9,19 @@ import { useTheme } from "@/components/ui/ThemeProvider";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+function ImagePlaceholder({ text, className = "" }: { text: string; className?: string }) {
+  const { isDark } = useTheme();
+  return (
+    <div className={`flex items-center justify-center border-2 border-dashed rounded-xl p-6 ${
+      isDark ? "border-white/10 bg-white/[0.02]" : "border-black/10 bg-black/[0.02]"
+    } ${className}`}>
+      <p className={`text-xs text-center leading-relaxed italic ${isDark ? "text-white/25" : "text-black/25"}`}>
+        {text}
+      </p>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { isDark } = useTheme();
 
@@ -16,6 +29,11 @@ export default function HomePage() {
     <main className={`overflow-x-hidden transition-colors duration-500 ${isDark ? "bg-black text-white" : "bg-white text-black"}`}>
       {/* ── Hero Section ── */}
       <Hero />
+
+      <ImagePlaceholder
+        text="V1 Sensor mounted in a commercial walk-in cooler ceiling — LiDAR depth scan overlay visible, green LED indicator active, frosted shelving with produce below"
+        className="w-full h-72"
+      />
 
       {/* ── Partner Logos ── */}
       <div className={`py-16 border-y ${isDark ? "bg-neutral-800 border-white/10" : "bg-gray-100 border-black/5"}`}>
@@ -34,6 +52,13 @@ export default function HomePage() {
       <section className="py-20">
         <KeyCapabilities />
       </section>
+
+      <div className="max-w-7xl mx-auto px-6 pb-8">
+        <ImagePlaceholder
+          text="Veratori dashboard on restaurant manager's tablet — live inventory count, low-stock alert highlighted, daily digest email open in background"
+          className="w-full h-64"
+        />
+      </div>
 
       {/* ── Final CTA ── */}
       <section className={`py-28 border-t ${isDark ? "bg-[#162722] border-white/5" : "bg-[#EBF1ED] border-black/5"}`}>

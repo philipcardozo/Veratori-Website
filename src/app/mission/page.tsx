@@ -29,6 +29,19 @@ const pillars = [
   }
 ];
 
+function ImagePlaceholder({ text, className = "" }: { text: string; className?: string }) {
+  const { isDark } = useTheme();
+  return (
+    <div className={`flex items-center justify-center border-2 border-dashed rounded-xl p-6 ${
+      isDark ? "border-white/10 bg-white/[0.02]" : "border-black/10 bg-black/[0.02]"
+    } ${className}`}>
+      <p className={`text-xs text-center leading-relaxed italic ${isDark ? "text-white/25" : "text-black/25"}`}>
+        {text}
+      </p>
+    </div>
+  );
+}
+
 function Pillars() {
   const { isDark } = useTheme();
   return (
@@ -360,6 +373,13 @@ export default function MissionPage() {
 
       <Pillars />
 
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <ImagePlaceholder
+          text="Commercial kitchen in operation — Veratori V1 Sensor visible on walk-in cooler ceiling, kitchen staff working, dashboard visible on wall-mounted tablet"
+          className="w-full h-64"
+        />
+      </div>
+
       {/* Context section */}
       <section className={`py-20 ${isDark ? "bg-midnight" : "bg-mist"}`}>
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -389,6 +409,13 @@ export default function MissionPage() {
       <DataFlowSection />
 
       <ROICalculator />
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <ImagePlaceholder
+          text="Food waste reduction in action — before/after shot of commercial kitchen walk-in, organized with LiDAR-sorted inventory labels visible on shelving units"
+          className="w-full h-56"
+        />
+      </div>
 
       <Research />
 
