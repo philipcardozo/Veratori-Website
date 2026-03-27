@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, FileText, BookOpen, Calculator, Video, Code, HelpCircle, Download, ExternalLink } from "lucide-react";
 import { useTheme } from "@/components/ui/ThemeProvider";
 
@@ -151,10 +152,21 @@ export default function ResourcesPage() {
                   isDark ? "bg-white/[0.03] border-white/[0.08]" : "bg-white border-black/[0.07] shadow-sm"
                 }`}
               >
-                <ImagePlaceholder
-                  text={paper.image ? "Whitepaper cover or research visual" : "Document or research image"}
-                  className="h-40 w-full border-0 border-b rounded-0"
-                />
+                <div className="relative h-40 w-full">
+                  <ImagePlaceholder
+                    text={paper.image ? "Whitepaper cover or research visual" : "Document or research image"}
+                    className="h-40 w-full border-0 border-b rounded-0"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <Image
+                      src="/images/Logos/Brand Identity/Logos/Logo_symbol_dark-nobg.png"
+                      alt="Veratori"
+                      width={40}
+                      height={40}
+                      className="opacity-80"
+                    />
+                  </div>
+                </div>
                 <div className="p-8 flex flex-col gap-4">
                   <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-sage/10 text-sage w-fit">
                     {paper.tag}
