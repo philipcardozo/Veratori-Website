@@ -159,7 +159,16 @@ export default function Header() {
                     aria-expanded={activeMenu === key}
                     aria-haspopup="true"
                   >
-                    {key}
+                    <span className="relative">
+                      {key}
+                      {isActive(key) && (
+                        <motion.div
+                          layoutId="nav-underline"
+                          className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-sage rounded-full"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </span>
                     <motion.span
                       animate={{ rotate: activeMenu === key ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
@@ -167,13 +176,6 @@ export default function Header() {
                     >
                       <ChevronDown className="w-3.5 h-3.5 opacity-50" />
                     </motion.span>
-                    {isActive(key) && (
-                      <motion.div
-                        layoutId="nav-underline"
-                        className="absolute -bottom-1 left-3 right-3 h-0.5 bg-sage rounded-full"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
                   </button>
                 </div>
               ))}
