@@ -104,7 +104,7 @@ export default function Header() {
     if (menuTimeout.current) clearTimeout(menuTimeout.current);
   };
 
-  const isActive = (key: string) => pathname === routeMap[key];
+  const isActive = (key: string) => pathname.replace(/\/$/, "") === routeMap[key];
 
   return (
     <>
