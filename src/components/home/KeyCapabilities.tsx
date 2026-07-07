@@ -9,7 +9,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 const capabilities = [
   {
     title: "Automatic Stock Tracking",
-    desc: "YOLO-based object detection runs at 15–30 FPS on an NVIDIA Jetson edge device, identifying and counting items continuously without any manual input from staff.",
+    desc: "State-of-the-art AI cameras and sensors identify food items and expiration dates. Inventory is continuously observed, removing the need for manual monitoring from frontline workers.",
     Icon: Eye,
   },
   {

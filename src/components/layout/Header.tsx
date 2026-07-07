@@ -12,6 +12,13 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/components/ui/ThemeProvider";
 
+/* ─── Dismiss 24/7 badge on any nav interaction ─── */
+function fireNavClick() {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem("veratoriNavClicked", "1");
+  window.dispatchEvent(new CustomEvent("veratori:nav-click"));
+}
+
 /* ─── Mega-menu data ─── */
 type MegaSection = { title: string; desc: string; href: string; icon: React.ElementType };
 type MegaMenu = { sections: MegaSection[]; quote?: string; locations?: string[] };
@@ -51,8 +58,8 @@ const megaMenus: Record<string, MegaMenu> = {
   },
   Contact: {
     sections: [
-      { title: "Get In Touch", desc: "contact@veratori.com", href: "/contact", icon: Mail },
-      { title: "Book a Demo", desc: "Schedule a live walkthrough", href: "/contact?source=demo", icon: Calculator },
+      { title: "Get In Touch", desc: "Questions, partnerships, or press inquiries", href: "/contact", icon: Mail },
+      { title: "Book a Demo", desc: "See Veratori live — 30-min walkthrough", href: "/demo", icon: Calculator },
     ],
     locations: ["Austin, TX (HQ)", "Atlanta, GA", "New York, NY"],
   },
@@ -113,11 +120,9 @@ export default function Header() {
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? isDark
-              ? "bg-[#151D3B]/80 backdrop-blur-[24px] saturate-[1.4] border-b border-white/[0.06]"
-              : "bg-[#F3F5F7]/80 backdrop-blur-[24px] saturate-[1.4] border-b border-black/[0.06]"
-            : "bg-transparent"
+          isDark
+            ? "bg-[#151D3B]/80 backdrop-blur-[24px] saturate-[1.4] border-b border-white/[0.06]"
+            : "bg-[#F3F5F7]/80 backdrop-blur-[24px] saturate-[1.4] border-b border-black/[0.06]"
         }`}
       >
         <div className="w-full mx-auto px-6 sm:px-10 lg:px-12">
@@ -148,7 +153,9 @@ export default function Header() {
                   onMouseEnter={() => openMenu(key)}
                   onMouseLeave={scheduleClose}
                 >
-                  <button
+                  <Link
+                    href={routeMap[key]}
+                    onClick={() => { setActiveMenu(null); fireNavClick(); }}
                     className={`relative flex items-center gap-1 px-3 py-2 rounded-lg text-[clamp(15px,1.1vw,17px)] font-semibold transition-colors duration-200 cursor-pointer select-none ${
                       isActive(key)
                         ? "text-sage"
@@ -176,7 +183,7 @@ export default function Header() {
                     >
                       <ChevronDown className="w-3.5 h-3.5 opacity-50" />
                     </motion.span>
-                  </button>
+                  </Link>
                 </div>
               ))}
             </nav>
@@ -196,7 +203,7 @@ export default function Header() {
               </button>
 
               <Link
-                href="/contact?source=demo"
+                href="/demo"
                 className="hidden md:inline-flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 bg-sage text-white hover:bg-sage-light shadow-lg shadow-sage/20"
               >
                 Get a Demo
@@ -247,7 +254,7 @@ export default function Header() {
                       >
                         <Link
                           href={item.href}
-                          onClick={() => setActiveMenu(null)}
+                          onClick={() => { setActiveMenu(null); fireNavClick(); }}
                           className={`flex items-start gap-3 p-3 rounded-xl transition-all group ${
                             isDark ? "hover:bg-white/[0.05]" : "hover:bg-black/[0.04]"
                           }`}
@@ -434,7 +441,7 @@ export default function Header() {
                               <Link
                                 key={item.href}
                                 href={item.href}
-                                onClick={() => setDrawerOpen(false)}
+                                onClick={() => { setDrawerOpen(false); fireNavClick(); }}
                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                                   isDark
                                     ? "text-white/50 hover:text-white hover:bg-white/5"

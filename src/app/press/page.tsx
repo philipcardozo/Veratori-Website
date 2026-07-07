@@ -135,12 +135,12 @@ export default function PressPage() {
       </section>
 
       {/* ── Hero image band ── */}
-      <section className="px-6 max-w-7xl mx-auto pb-16">
+      {/* <section className="px-6 max-w-7xl mx-auto pb-16">
         <ImagePlaceholder
           text="Press center hero image: Professional team photo of Veratori founders at the ATV Demo Day event, casual-professional setting with tech/startup aesthetic. Clean modern background."
           className="h-64 w-full"
         />
-      </section>
+      </section> */}
 
       {/* ── Press Releases ── */}
       <section className={`py-20 ${isDark ? "bg-midnight" : "bg-mist"}`}>
@@ -202,10 +202,10 @@ export default function PressPage() {
                   isDark ? "border-white/[0.08]" : "border-black/[0.07]"
                 }`}
               >
-                <ImagePlaceholder
+                {/* <ImagePlaceholder
                   text={item.placeholder}
                   className="h-28 rounded-none border-0"
-                />
+                /> */}
                 <div className={`px-4 py-3 border-t ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"}`}>
                   <p className={`text-xs font-semibold text-center ${isDark ? "text-white/40" : "text-black/40"}`}>
                     {item.outlet}
@@ -253,10 +253,10 @@ export default function PressPage() {
                 <a href="mailto:press@veratori.com" className="text-sage hover:underline">press@veratori.com</a>
               </p>
             </div>
-            <ImagePlaceholder
+            {/* <ImagePlaceholder
               text="Press kit preview image: Mockup showing printed one-pager, business card, logo sheet, and USB drive with Veratori branding — clean flat-lay on white surface"
               className="h-80"
-            />
+            /> */}
           </div>
         </div>
       </section>

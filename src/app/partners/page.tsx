@@ -153,10 +153,10 @@ export default function PartnersPage() {
                   isDark ? "bg-white/[0.03] border-white/[0.08]" : "bg-white border-black/[0.07] shadow-sm"
                 }`}
               >
-                <ImagePlaceholder
+                {/* <ImagePlaceholder
                   text={partner.placeholder}
                   className="h-28 rounded-none border-0 border-b-2"
-                />
+                /> */}
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="text-base font-bold">{partner.name}</h3>
@@ -215,12 +215,12 @@ export default function PartnersPage() {
       </section>
 
       {/* ── Image band ── */}
-      <section className="px-6 max-w-7xl mx-auto py-16">
+      {/* <section className="px-6 max-w-7xl mx-auto py-16">
         <ImagePlaceholder
           text="Partners page image: Wide shot of Veratori team presenting at an Atlanta Tech Village networking event — modern co-working space, projector screen, engaged audience of startup founders and investors"
           className="h-60 w-full"
         />
-      </section>
+      </section> */}
 
       {/* ── Become a Partner Form ── */}
       <section id="become-a-partner" className={`py-20 border-t ${isDark ? "border-white/[0.06] bg-midnight" : "border-black/[0.06] bg-mist"}`}>

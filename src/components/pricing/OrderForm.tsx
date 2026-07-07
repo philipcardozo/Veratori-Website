@@ -2,10 +2,79 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, X, Eye, EyeOff, ArrowRight, Lock } from "lucide-react";
+import {
+  Plus, Minus, X, Eye, EyeOff, ArrowRight, Lock,
+  Check, Zap, Building2, Cpu, ShieldCheck, Wifi, Camera,
+} from "lucide-react";
 import { useTheme } from "@/components/ui/ThemeProvider";
 
-/* ─── Brand SVG logos (official paths from Simple Icons / brand assets) ─── */
+/* ─── Plan definitions ─── */
+const plans = [
+  {
+    id: "standard",
+    name: "Standard",
+    price: 299,
+    icon: Cpu,
+    tagline: "One walk-in, fully automated",
+    features: [
+      "YOLO object detection (15 FPS)",
+      "Daily manager digest email",
+      "Anomaly & low-stock alerts",
+      "Veratori dashboard access",
+      "IP67 waterproof housing",
+      "WiFi 6E connectivity",
+    ],
+    badge: null,
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    price: 359,
+    icon: Zap,
+    tagline: "For multi-cooler operations",
+    features: [
+      "Everything in Standard",
+      "YOLO detection at 30 FPS",
+      "4K RGB + ToF LiDAR sensing",
+      "Multi-location dashboard",
+      "Inventory forecasting",
+      "WiFi 6E + LTE failover",
+    ],
+    badge: null,
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    price: 549,
+    icon: Building2,
+    tagline: "Full-chain operational intelligence",
+    features: [
+      "Everything in Growth",
+      "Dual-camera array per unit",
+      "Dedicated account manager",
+      "API access & webhooks",
+      "Custom alert thresholds",
+      "Priority hardware support",
+    ],
+    badge: null,
+  },
+] as const;
+
+type PlanId = (typeof plans)[number]["id"];
+
+/* ─── Subscription terms ─── */
+type Term = { months: 1 | 6 | 12 | 24; label: string; discount: number; badge?: string };
+
+const terms: Term[] = [
+  { months: 1,  label: "Monthly",   discount: 0 },
+  { months: 6,  label: "6 Months",  discount: 5 },
+  { months: 12, label: "12 Months", discount: 12, badge: "Best Value" },
+  { months: 24, label: "24 Months", discount: 20 },
+];
+
+type TermMonths = Term["months"];
+
+/* ─── Brand SVG logos ─── */
 function StripeLogo() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-auto" aria-label="Stripe" fill="white">
@@ -18,14 +87,6 @@ function PayPalLogo() {
   return (
     <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5" aria-label="PayPal">
       <path d="M15.607 4.653H8.941L6.645 19.251H1.82L4.862 0h7.995c3.754 0 6.375 2.294 6.473 5.513-.648-.478-2.105-.86-3.722-.86m6.57 5.546c0 3.41-3.01 6.853-6.958 6.853h-2.493L11.595 24H6.74l1.845-11.538h3.592c4.208 0 7.346-3.634 7.153-6.949a5.24 5.24 0 0 1 2.848 4.686M9.653 5.546h6.408c.907 0 1.942.222 2.363.541-.195 2.741-2.655 5.483-6.441 5.483H8.714Z" />
-    </svg>
-  );
-}
-
-function PhantomLogo() {
-  return (
-    <svg viewBox="0 0 512 512" className="w-5 h-5" aria-label="Phantom" fill="white">
-      <path d="M9 402.313C9 458.146 37.7123 471 67.5731 471C130.74 471 178.211 413.56 206.541 368.171C203.095 378.212 201.181 388.254 201.181 397.895C201.181 424.405 215.729 443.284 244.441 443.284C283.872 443.284 325.984 407.133 347.805 368.171C346.274 373.794 345.508 379.016 345.508 383.836C345.508 402.313 355.462 413.962 375.752 413.962C439.684 413.962 504 295.467 504 191.834C504 111.097 464.951 40 366.947 40C194.673 40 9 260.119 9 402.313ZM307.608 182.997C307.608 162.913 318.327 148.855 334.023 148.855C349.336 148.855 360.056 162.913 360.056 182.997C360.056 203.081 349.336 217.541 334.023 217.541C318.327 217.541 307.608 203.081 307.608 182.997ZM389.534 182.997C389.534 162.913 400.253 148.855 415.949 148.855C431.262 148.855 441.981 162.913 441.981 182.997C441.981 203.081 431.262 217.541 415.949 217.541C400.253 217.541 389.534 203.081 389.534 182.997Z" />
     </svg>
   );
 }
@@ -51,27 +112,17 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 
-  const providerLabel: Record<string, string> = {
-    stripe: "Stripe",
-    paypal: "PayPal",
-    phantom: "Phantom Wallet",
-  };
+  const providerLabel: Record<string, string> = { stripe: "Stripe", paypal: "PayPal" };
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      onSuccess();
-    }, 1200);
+    setTimeout(() => { setLoading(false); onSuccess(); }, 1200);
   };
 
   const handleGoogle = () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      onSuccess();
-    }, 1400);
+    setTimeout(() => { setLoading(false); onSuccess(); }, 1400);
   };
 
   return (
@@ -81,7 +132,6 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
     >
-      {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -89,8 +139,6 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
         onClick={onClose}
         className="absolute inset-0 bg-black/70 backdrop-blur-md"
       />
-
-      {/* Modal */}
       <motion.div
         initial={{ opacity: 0, scale: 0.94, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -100,7 +148,6 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
           isDark ? "bg-[#0B1526] border-white/10" : "bg-white border-black/8"
         }`}
       >
-        {/* Header */}
         <div className={`px-6 pt-6 pb-5 border-b ${isDark ? "border-white/8" : "border-black/6"}`}>
           <button
             onClick={onClose}
@@ -110,9 +157,7 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
           </button>
           <div className="flex items-center gap-2 mb-3">
             <Lock className="w-4 h-4 text-sage" />
-            <span className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-white/40" : "text-black/40"}`}>
-              Secure Checkout
-            </span>
+            <span className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-white/40" : "text-black/40"}`}>Secure Checkout</span>
           </div>
           <h2 className="text-xl font-bold">Sign in to continue</h2>
           <p className={`text-sm mt-1 ${isDark ? "text-white/45" : "text-black/45"}`}>
@@ -121,16 +166,13 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
           </p>
         </div>
 
-        {/* Tab switcher */}
         <div className={`flex gap-1 p-3 border-b ${isDark ? "border-white/8 bg-white/[0.02]" : "border-black/6 bg-black/[0.02]"}`}>
           {(["google", "email"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                tab === t
-                  ? "bg-sage text-black shadow-sm"
-                  : isDark ? "text-white/40 hover:text-white/70" : "text-black/40 hover:text-black/70"
+                tab === t ? "bg-sage text-black shadow-sm" : isDark ? "text-white/40 hover:text-white/70" : "text-black/40 hover:text-black/70"
               }`}
             >
               {t === "google" ? "Google" : "Email & Password"}
@@ -147,31 +189,19 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
                 onClick={handleGoogle}
                 disabled={loading}
                 className={`w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border font-semibold text-sm transition-all cursor-pointer ${
-                  isDark
-                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-white"
-                    : "border-black/10 bg-white hover:bg-black/[0.02] text-black shadow-sm"
+                  isDark ? "border-white/15 bg-white/5 hover:bg-white/10 text-white" : "border-black/10 bg-white hover:bg-black/[0.02] text-black shadow-sm"
                 } disabled:opacity-60`}
               >
                 {loading ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                    className="w-5 h-5 rounded-full border-2 border-sage border-t-transparent"
-                  />
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} className="w-5 h-5 rounded-full border-2 border-sage border-t-transparent" />
                 ) : (
-                  <>
-                    <GoogleLogo />
-                    Continue with Google
-                  </>
+                  <><GoogleLogo />Continue with Google</>
                 )}
               </motion.button>
-              <p className={`text-center text-xs ${isDark ? "text-white/30" : "text-black/30"}`}>
-                We'll create your Veratori account automatically
-              </p>
+              <p className={`text-center text-xs ${isDark ? "text-white/30" : "text-black/30"}`}>We'll create your Veratori account automatically</p>
             </div>
           ) : (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
-              {/* Sign in / Sign up toggle */}
               <div className={`flex gap-1 p-1 rounded-lg ${isDark ? "bg-white/5" : "bg-black/5"}`}>
                 {(["signin", "signup"] as const).map((m) => (
                   <button
@@ -179,84 +209,53 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
                     type="button"
                     onClick={() => setMode(m)}
                     className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                      mode === m
-                        ? isDark ? "bg-white/15 text-white" : "bg-white text-black shadow-sm"
-                        : isDark ? "text-white/40" : "text-black/40"
+                      mode === m ? isDark ? "bg-white/15 text-white" : "bg-white text-black shadow-sm" : isDark ? "text-white/40" : "text-black/40"
                     }`}
                   >
                     {m === "signin" ? "Sign In" : "Create Account"}
                   </button>
                 ))}
               </div>
-
               <div>
-                <label className={`block text-xs font-semibold mb-1.5 ${isDark ? "text-white/60" : "text-black/60"}`}>
-                  Email
-                </label>
+                <label className={`block text-xs font-semibold mb-1.5 ${isDark ? "text-white/60" : "text-black/60"}`}>Email</label>
                 <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@restaurant.com"
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                    isDark
-                      ? "bg-white/5 border-white/10 text-white placeholder-white/25 focus:border-sage/60"
-                      : "bg-white border-black/10 text-black placeholder-black/30 focus:border-sage/60"
+                    isDark ? "bg-white/5 border-white/10 text-white placeholder-white/25 focus:border-sage/60" : "bg-white border-black/10 text-black placeholder-black/30 focus:border-sage/60"
                   }`}
                 />
               </div>
-
               <div>
-                <label className={`block text-xs font-semibold mb-1.5 ${isDark ? "text-white/60" : "text-black/60"}`}>
-                  Password
-                </label>
+                <label className={`block text-xs font-semibold mb-1.5 ${isDark ? "text-white/60" : "text-black/60"}`}>Password</label>
                 <div className="relative">
                   <input
-                    type={showPass ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    type={showPass ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     className={`w-full px-4 py-2.5 pr-10 rounded-xl border text-sm outline-none transition-all ${
-                      isDark
-                        ? "bg-white/5 border-white/10 text-white placeholder-white/25 focus:border-sage/60"
-                        : "bg-white border-black/10 text-black placeholder-black/30 focus:border-sage/60"
+                      isDark ? "bg-white/5 border-white/10 text-white placeholder-white/25 focus:border-sage/60" : "bg-white border-black/10 text-black placeholder-black/30 focus:border-sage/60"
                     }`}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPass(!showPass)}
-                    className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${isDark ? "text-white/30 hover:text-white/60" : "text-black/30 hover:text-black/60"}`}
-                  >
+                  <button type="button" onClick={() => setShowPass(!showPass)} className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${isDark ? "text-white/30 hover:text-white/60" : "text-black/30 hover:text-black/60"}`}>
                     {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={loading}
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                type="submit" disabled={loading}
                 className="w-full py-3 rounded-xl bg-sage text-black font-bold text-sm transition-all cursor-pointer disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {loading ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                    className="w-5 h-5 rounded-full border-2 border-black/40 border-t-transparent"
-                  />
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} className="w-5 h-5 rounded-full border-2 border-black/40 border-t-transparent" />
                 ) : (
                   <>{mode === "signin" ? "Sign In" : "Create Account"} <ArrowRight className="w-4 h-4" /></>
                 )}
               </motion.button>
             </form>
           )}
-
           <p className={`mt-5 text-center text-[10px] leading-relaxed ${isDark ? "text-white/20" : "text-black/20"}`}>
-            By continuing, you agree to Veratori's Terms of Service and Privacy Policy.
-            <br />
+            By continuing, you agree to Veratori's Terms of Service and Privacy Policy.<br />
             <span className="text-sage">SSL encrypted · SOC 2 compliant</span>
           </p>
         </div>
@@ -265,47 +264,30 @@ function LoginModal({ provider, onClose, onSuccess }: { provider: string; onClos
   );
 }
 
-/* ─── Payment button ─── */
-function PayButton({
-  onClick,
-  bg,
-  hoverBg,
-  children,
-}: {
-  onClick: () => void;
-  bg: string;
-  hoverBg: string;
-  children: React.ReactNode;
-}) {
+/* ─── Pay Button ─── */
+function PayButton({ onClick, bg, hoverBg, children }: { onClick: () => void; bg: string; hoverBg: string; children: React.ReactNode }) {
   return (
     <motion.button
       onClick={onClick}
-      initial="idle"
       whileHover="hovered"
       whileTap={{ scale: 0.98 }}
       variants={{ idle: {}, hovered: {} }}
-      className="w-full flex items-center justify-between px-6 py-4 rounded-xl font-semibold text-white shadow-sm cursor-pointer overflow-hidden relative"
+      initial="idle"
+      className="w-full flex items-center justify-between px-5 py-3.5 rounded-xl font-semibold text-white shadow-sm cursor-pointer overflow-hidden relative text-sm"
       style={{ backgroundColor: bg }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = hoverBg; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = bg; }}
     >
       <span className="flex items-center gap-3 relative z-10">{children}</span>
       <motion.span
-        variants={{
-          idle: { x: 0, opacity: 0.5 },
-          hovered: { x: 4, opacity: 1 },
-        }}
+        variants={{ idle: { x: 0, opacity: 0.5 }, hovered: { x: 4, opacity: 1 } }}
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         className="relative z-10"
       >
         <ArrowRight className="w-4 h-4" />
       </motion.span>
-      {/* Hover shimmer */}
       <motion.div
-        variants={{
-          idle: { opacity: 0, x: "-100%" },
-          hovered: { opacity: 1, x: "110%" },
-        }}
+        variants={{ idle: { opacity: 0, x: "-100%" }, hovered: { opacity: 1, x: "110%" } }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none"
       />
@@ -313,32 +295,29 @@ function PayButton({
   );
 }
 
-/* ─── Main component ─── */
+/* ─── Main Configurator ─── */
 export default function OrderForm() {
   const { isDark } = useTheme();
-  const [hardwareCount, setHardwareCount] = useState(1);
+  const [selectedPlan, setSelectedPlan] = useState<PlanId>("growth");
+  const [unitCount, setUnitCount] = useState(1);
+  const [selectedTerm, setSelectedTerm] = useState<TermMonths>(12);
   const [loginFor, setLoginFor] = useState<string | null>(null);
-  const pricePerUnit = 359;
-  const total = hardwareCount * pricePerUnit;
 
-  const handleCheckout = (provider: string) => {
-    setLoginFor(provider);
-  };
+  const plan = plans.find((p) => p.id === selectedPlan)!;
+  const term = terms.find((t) => t.months === selectedTerm)!;
 
+  const baseMonthly = plan.price * unitCount;
+  const discountedMonthly = Math.round(baseMonthly * (1 - term.discount / 100));
+  const totalCommitment = discountedMonthly * term.months;
+  const monthlySavings = baseMonthly - discountedMonthly;
+  const totalSavings = monthlySavings * term.months;
+
+  const handleCheckout = (provider: string) => setLoginFor(provider);
   const handleLoginSuccess = () => {
     const provider = loginFor;
     setLoginFor(null);
-    if (provider === "phantom") {
-      if (typeof window !== "undefined" && (window as any).solana?.isPhantom) {
-        alert("Phantom Wallet detected. Requesting connection... (Integration pending)");
-      } else {
-        alert("Phantom Wallet not found. Please install the extension.");
-      }
-    } else if (provider === "stripe") {
-      alert("Redirecting to Stripe Checkout... (Integration pending)");
-    } else if (provider === "paypal") {
-      alert("Redirecting to PayPal... (Integration pending)");
-    }
+    if (provider === "stripe") alert("Redirecting to Stripe Checkout... (Integration pending)");
+    else if (provider === "paypal") alert("Redirecting to PayPal... (Integration pending)");
   };
 
   return (
@@ -347,69 +326,199 @@ export default function OrderForm() {
         initial={{ opacity: 0, x: -16 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
-        className={`p-8 md:p-10 rounded-2xl border text-left flex flex-col h-full ${isDark ? "bg-[#0B1526]/50 border-white/10 shadow-lg shadow-white/5" : "bg-mist/50 border-black/5 shadow-2xl shadow-black/5"}`}
+        className={`p-8 md:p-10 rounded-2xl border text-left ${isDark ? "bg-[#0B1526]/50 border-white/10 shadow-lg shadow-white/5" : "bg-mist/50 border-black/5 shadow-2xl shadow-black/5"}`}
       >
-        <h3 className="text-3xl font-bold mb-2">Order Beta Access</h3>
+        <h3 className="text-3xl font-bold mb-1">Configuring Beta Prices</h3>
         <p className={`text-sm mb-8 ${isDark ? "text-white/50" : "text-black/50"}`}>
-          Secure your deployment. Enter the number of hardware units required for your coolers.
+          Choose your plan, number of units, and subscription term.
         </p>
 
-        {/* Configuration */}
-        <div className="mb-8 space-y-6">
-          <div className={`p-5 rounded-xl border flex items-center justify-between ${isDark ? "bg-white/5 border-white/10" : "bg-white border-black/5"}`}>
+        {/* ── Step 1: Plan ── */}
+        <div className="mb-8">
+          <p className={`text-xs font-bold uppercase tracking-widest mb-3 ${isDark ? "text-white/35" : "text-black/35"}`}>1 — Select Plan</p>
+          <div className="grid grid-cols-1 gap-3">
+            {plans.map((p) => {
+              const isSelected = selectedPlan === p.id;
+              const Icon = p.icon;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setSelectedPlan(p.id)}
+                  className={`relative w-full text-left px-5 py-4 rounded-xl border transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-sage bg-sage/10"
+                      : isDark ? "border-white/10 hover:border-white/20 bg-white/[0.02]" : "border-black/8 hover:border-black/15 bg-white"
+                  }`}
+                >
+                  {p.badge && (
+                    <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-widest bg-sage text-black px-2 py-0.5 rounded-full">
+                      {p.badge}
+                    </span>
+                  )}
+                  <div className="flex items-start gap-3">
+                    <div className={`mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isSelected ? "bg-sage/20" : isDark ? "bg-white/5" : "bg-black/5"}`}>
+                      <Icon className={`w-4 h-4 ${isSelected ? "text-sage" : isDark ? "text-white/50" : "text-black/50"}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        <span className={`font-bold text-base ${isSelected ? "text-sage" : ""}`}>{p.name}</span>
+                        <span className={`text-sm ${isDark ? "text-white/40" : "text-black/40"}`}>{p.tagline}</span>
+                      </div>
+                      <p className={`text-xl font-black mt-0.5 ${isSelected ? "" : isDark ? "text-white/80" : "text-black/80"}`}>
+                        ${p.price}<span className={`text-xs font-normal ml-1 ${isDark ? "text-white/35" : "text-black/35"}`}>/unit/mo</span>
+                      </p>
+                    </div>
+                    <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-1 flex items-center justify-center transition-all ${
+                      isSelected ? "border-sage bg-sage" : isDark ? "border-white/20" : "border-black/20"
+                    }`}>
+                      {isSelected && <Check className="w-3 h-3 text-black" strokeWidth={3} />}
+                    </div>
+                  </div>
+                  {/* Features */}
+                  <AnimatePresence initial={false}>
+                    {isSelected && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.22, ease: "easeOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-4 pt-4 border-t border-sage/20 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
+                          {p.features.map((f) => (
+                            <div key={f} className="flex items-center gap-2">
+                              <Check className="w-3.5 h-3.5 text-sage shrink-0" strokeWidth={2.5} />
+                              <span className={`text-xs ${isDark ? "text-white/60" : "text-black/60"}`}>{f}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Step 2: Units ── */}
+        <div className="mb-8">
+          <p className={`text-xs font-bold uppercase tracking-widest mb-3 ${isDark ? "text-white/35" : "text-black/35"}`}>2 — Number of Sensor Units</p>
+          <div className={`px-5 py-4 rounded-xl border flex items-center justify-between ${isDark ? "bg-white/5 border-white/10" : "bg-white border-black/5"}`}>
             <div>
-              <p className="font-bold text-lg">Sensor Units</p>
-              <p className={`text-sm ${isDark ? "text-white/40" : "text-black/40"}`}>$359 / mo per hardware</p>
+              <p className="font-bold">V1 Sensor Units</p>
+              <p className={`text-xs mt-0.5 ${isDark ? "text-white/40" : "text-black/40"}`}>1 unit per walk-in cooler or storage room</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <button
-                onClick={() => setHardwareCount(Math.max(1, hardwareCount - 1))}
-                className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${isDark ? "border-white/10 hover:bg-white/10" : "border-black/10 hover:bg-black/5"}`}
+                onClick={() => setUnitCount(Math.max(1, unitCount - 1))}
+                className={`w-9 h-9 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${isDark ? "border-white/10 hover:bg-white/10" : "border-black/10 hover:bg-black/5"}`}
               >
                 <Minus className="w-4 h-4" />
               </button>
-              <span className="w-8 text-center font-bold text-xl">{hardwareCount}</span>
+              <span className="w-8 text-center font-black text-2xl">{unitCount}</span>
               <button
-                onClick={() => setHardwareCount(hardwareCount + 1)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${isDark ? "border-white/10 hover:bg-white/10" : "border-black/10 hover:bg-black/5"}`}
+                onClick={() => setUnitCount(unitCount + 1)}
+                className={`w-9 h-9 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${isDark ? "border-white/10 hover:bg-white/10" : "border-black/10 hover:bg-black/5"}`}
               >
                 <Plus className="w-4 h-4" />
               </button>
             </div>
           </div>
-
-          <div className="flex items-end justify-between px-2">
-            <span className={`text-base font-medium ${isDark ? "text-white/60" : "text-black/60"}`}>Monthly Total</span>
-            <span className="text-4xl font-black tracking-tight">${total}</span>
-          </div>
-          <div className={`flex items-center justify-between px-2 pt-1 ${isDark ? "text-white/35" : "text-black/35"}`}>
-            <span className="text-sm">+ One-time installation fee</span>
-            <span className="text-sm font-semibold">Contact us</span>
-          </div>
-          <div className={`h-px w-full ${isDark ? "bg-white/10" : "bg-black/10"}`} />
         </div>
 
-        <div className="flex-1" />
+        {/* ── Step 3: Term ── */}
+        <div className="mb-8">
+          <p className={`text-xs font-bold uppercase tracking-widest mb-3 ${isDark ? "text-white/35" : "text-black/35"}`}>3 — Subscription Term</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {terms.map((t) => {
+              const isSelected = selectedTerm === t.months;
+              return (
+                <button
+                  key={t.months}
+                  onClick={() => setSelectedTerm(t.months)}
+                  className={`relative py-3 px-2 rounded-xl border text-center transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-sage bg-sage/10"
+                      : isDark ? "border-white/10 hover:border-white/20 bg-white/[0.02]" : "border-black/8 hover:border-black/15 bg-white"
+                  }`}
+                >
+                  {t.badge && (
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-widest bg-sage text-black px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                      {t.badge}
+                    </span>
+                  )}
+                  <p className={`font-bold text-sm ${isSelected ? "text-sage" : ""}`}>{t.label}</p>
+                  {t.discount > 0 ? (
+                    <p className="text-xs text-sage font-semibold mt-0.5">{t.discount}% off</p>
+                  ) : (
+                    <p className={`text-xs mt-0.5 ${isDark ? "text-white/30" : "text-black/30"}`}>standard</p>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-        {/* Payment Options */}
+        {/* ── Pricing Summary ── */}
+        <div className={`rounded-xl border p-5 mb-8 space-y-3 ${isDark ? "bg-white/5 border-white/10" : "bg-white border-black/5"}`}>
+          <p className={`text-xs font-bold uppercase tracking-widest mb-4 ${isDark ? "text-white/30" : "text-black/30"}`}>Order Summary</p>
+
+          <div className="flex justify-between items-center">
+            <span className={`text-sm ${isDark ? "text-white/60" : "text-black/60"}`}>
+              {plan.name} × {unitCount} unit{unitCount > 1 ? "s" : ""}
+            </span>
+            <span className={`text-sm ${isDark ? "text-white/60" : "text-black/60"}`}>${plan.price * unitCount}/mo</span>
+          </div>
+
+          {term.discount > 0 && (
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-sage">{term.label} discount ({term.discount}% off)</span>
+              <span className="text-sm text-sage font-semibold">−${monthlySavings}/mo</span>
+            </div>
+          )}
+
+          <div className={`h-px ${isDark ? "bg-white/10" : "bg-black/8"}`} />
+
+          <div className="flex justify-between items-end">
+            <div>
+              <p className={`text-xs ${isDark ? "text-white/40" : "text-black/40"}`}>Monthly charge</p>
+              <p className="text-3xl font-black tracking-tight">${discountedMonthly}<span className={`text-sm font-normal ml-1 ${isDark ? "text-white/40" : "text-black/40"}`}>/mo</span></p>
+            </div>
+            {term.months > 1 && (
+              <div className="text-right">
+                <p className={`text-xs ${isDark ? "text-white/40" : "text-black/40"}`}>Total for {term.months} months</p>
+                <p className="text-lg font-bold">${totalCommitment.toLocaleString()}</p>
+              </div>
+            )}
+          </div>
+
+          {totalSavings > 0 && (
+            <div className="flex items-center gap-2 pt-1">
+              <ShieldCheck className="w-4 h-4 text-sage shrink-0" />
+              <p className="text-xs text-sage font-semibold">
+                You save ${totalSavings.toLocaleString()} over {term.months} months vs month-to-month
+              </p>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between pt-1">
+            <span className={`text-xs ${isDark ? "text-white/35" : "text-black/35"}`}>+ One-time installation fee</span>
+            <span className={`text-xs font-semibold ${isDark ? "text-white/35" : "text-black/35"}`}>Contact us</span>
+          </div>
+          <p className="text-xs text-sage/80 font-medium">✓ First 30 days free</p>
+        </div>
+
+        {/* ── Payment Options ── */}
         <div className="space-y-3">
-          <p className={`text-xs font-bold uppercase tracking-widest text-center mb-4 ${isDark ? "text-white/30" : "text-black/30"}`}>
-            Select Payment Method
-          </p>
-
+          <p className={`text-xs font-bold uppercase tracking-widest text-center mb-4 ${isDark ? "text-white/30" : "text-black/30"}`}>Select Payment Method</p>
           <PayButton onClick={() => handleCheckout("stripe")} bg="#635BFF" hoverBg="#5247E8">
             <StripeLogo />
             <span>Credit Card (Stripe)</span>
           </PayButton>
-
           <PayButton onClick={() => handleCheckout("paypal")} bg="#0070BA" hoverBg="#005EA6">
             <PayPalLogo />
             <span>PayPal</span>
-          </PayButton>
-
-          <PayButton onClick={() => handleCheckout("phantom")} bg="#AB9FF2" hoverBg="#9B8EE8">
-            <PhantomLogo />
-            <span>Phantom Wallet (Bitcoin)</span>
           </PayButton>
         </div>
 
@@ -418,7 +527,6 @@ export default function OrderForm() {
         </p>
       </motion.div>
 
-      {/* Login Modal */}
       <AnimatePresence>
         {loginFor && (
           <LoginModal

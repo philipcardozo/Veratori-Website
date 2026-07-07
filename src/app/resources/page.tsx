@@ -152,7 +152,7 @@ export default function ResourcesPage() {
                   isDark ? "bg-white/[0.03] border-white/[0.08]" : "bg-white border-black/[0.07] shadow-sm"
                 }`}
               >
-                <div className="relative h-40 w-full bg-gray-100">
+                {/* <div className="relative h-40 w-full bg-gray-100">
                   <ImagePlaceholder
                     text={paper.image ? "Whitepaper cover or research visual" : "Document or research image"}
                     className="h-40 w-full border-0 rounded-0 absolute inset-0"
@@ -166,7 +166,7 @@ export default function ResourcesPage() {
                       className="drop-shadow-sm"
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="p-8 flex flex-col gap-4">
                   <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-sage/10 text-sage w-fit">
                     {paper.tag}
@@ -194,12 +194,12 @@ export default function ResourcesPage() {
       </section>
 
       {/* ── Image band ── */}
-      <section className="px-6 max-w-7xl mx-auto pb-20">
+      {/* <section className="px-6 max-w-7xl mx-auto pb-20">
         <ImagePlaceholder
           text="Full-width resource hub banner: Clean overhead shot of a commercial kitchen with tablet showing Veratori dashboard data, LiDAR scan overlay visible on cooler in background"
           className="h-52 w-full"
         />
-      </section>
+      </section> */}
 
       {/* ── Documentation ── */}
       <section className={`py-20 ${isDark ? "bg-midnight" : "bg-mist"}`}>

@@ -373,12 +373,12 @@ export default function MissionPage() {
 
       <Pillars />
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* <div className="max-w-7xl mx-auto px-6 py-8">
         <ImagePlaceholder
           text="Commercial kitchen in operation — Veratori V1 Sensor visible on walk-in cooler ceiling, kitchen staff working, dashboard visible on wall-mounted tablet"
           className="w-full h-64"
         />
-      </div>
+      </div> */}
 
       {/* Context section */}
       <section className={`py-20 ${isDark ? "bg-midnight" : "bg-mist"}`}>
@@ -410,12 +410,12 @@ export default function MissionPage() {
 
       <ROICalculator />
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* <div className="max-w-7xl mx-auto px-6 py-8">
         <ImagePlaceholder
           text="Food waste reduction in action — before/after shot of commercial kitchen walk-in, organized with LiDAR-sorted inventory labels visible on shelving units"
           className="w-full h-56"
         />
-      </div>
+      </div> */}
 
       <Research />
 

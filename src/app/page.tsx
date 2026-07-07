@@ -27,13 +27,14 @@ export default function HomePage() {
 
   return (
     <main className={`overflow-x-hidden transition-colors duration-500 ${isDark ? "bg-black text-white" : "bg-white text-black"}`}>
+
       {/* ── Hero Section ── */}
       <Hero />
 
-      <ImagePlaceholder
+      {/* <ImagePlaceholder
         text="V1 Sensor mounted in a commercial walk-in cooler ceiling — LiDAR depth scan overlay visible, green LED indicator active, frosted shelving with produce below"
         className="w-full h-72"
-      />
+      /> */}
 
       {/* ── Partner Logos ── */}
       <div className={`py-16 border-y ${isDark ? "bg-neutral-800 border-white/10" : "bg-gray-100 border-black/5"}`}>
@@ -54,10 +55,10 @@ export default function HomePage() {
       </section>
 
       <div className="max-w-7xl mx-auto px-6 pb-8">
-        <ImagePlaceholder
+        {/* <ImagePlaceholder
           text="Veratori dashboard on restaurant manager's tablet — live inventory count, low-stock alert highlighted, daily digest email open in background"
           className="w-full h-64"
-        />
+        /> */}
       </div>
 
       {/* ── Final CTA ── */}

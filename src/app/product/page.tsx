@@ -70,23 +70,78 @@ export default function ProductPage() {
   return (
     <main className={`transition-colors duration-500 ${isDark ? "bg-black text-white" : "bg-white text-black"}`}>
 
-      {/* ── Page Header ── */}
-      <section className={`pt-28 pb-14 border-b ${isDark ? "border-white/5" : "border-black/5"}`}>
-        <div className="max-w-7xl mx-auto px-6 lg:px-20">
+      {/* ── Problem / Solution Hero ── */}
+      <section className={`pt-32 pb-20 border-b ${isDark ? "border-white/5" : "border-black/5"}`}>
+        <div className="max-w-5xl mx-auto px-6 lg:px-20">
+
+          {/* The Problem */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.55 }}
+            className="mb-20"
           >
-            <span className="text-sage font-semibold tracking-widest uppercase text-xs mb-4 block">How It Works</span>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-none mb-6">
-              Hardware in your cooler.<br />
-              <span className="text-sage">Data on your phone</span>
+            <span className="text-sage font-semibold tracking-widest uppercase text-xs mb-4 block">The Problem</span>
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-8">
+              Every year, US restaurants waste<br />
+              <span className="text-sage">over 22 billion lbs of food.</span>
             </h1>
-            <p className={`text-lg max-w-2xl leading-relaxed mb-8 ${isDark ? "text-white/55" : "text-black/55"}`}>
-              A compact sensor unit mounts to your storage ceiling. It runs computer vision models on-device, syncs with the Veratori dashboard, and sends your team alerts — no IT department required.
+            <div className={`space-y-5 text-lg leading-relaxed max-w-3xl ${isDark ? "text-white/65" : "text-black/65"}`}>
+              <p>
+                Over 50% of food waste in the restaurant industry comes from uncoordinated food prep and expiring produce. Managers don't know how much food to stock. Frontline employees don't know how much food to prepare.
+              </p>
+              <p>
+                This information gap — between how much a business produces and how many customers actually walk through the door — is the root of the food waste crisis.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Divider */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className={`h-px w-full mb-20 origin-left ${isDark ? "bg-white/10" : "bg-black/10"}`}
+          />
+
+          {/* The Solution */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.3 }}
+            className="mb-20"
+          >
+            <span className="text-sage font-semibold tracking-widest uppercase text-xs mb-4 block">The Solution</span>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-8">
+              If an information gap is the problem,<br />
+              <span className="text-sage">Veratori closes the gap.</span>
+            </h2>
+            <div className={`space-y-5 text-lg leading-relaxed max-w-3xl ${isDark ? "text-white/65" : "text-black/65"}`}>
+              <p>
+                Veratori integrates seamless, non-invasive food tracking technology into your business — collecting data on supply and demand 24/7. The system builds a history of data and translates it into a real-time forecast of future customer traffic and menu demand.
+              </p>
+              <p>
+                No more guessing what to stock. No more throwing away food that nobody ordered. Just clear, actionable intelligence delivered to your team every single day.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Analogy Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.45 }}
+            className={`rounded-2xl p-10 border ${isDark ? "bg-white/[0.03] border-white/10" : "bg-sage/[0.04] border-sage/20"}`}
+          >
+            <span className="text-sage font-semibold tracking-widest uppercase text-xs mb-4 block">Think of it like the weather</span>
+            <p className={`text-xl md:text-2xl font-medium leading-relaxed mb-6 ${isDark ? "text-white/90" : "text-black/90"}`}>
+              Just as you check the weather to know if it'll rain tomorrow, you check Veratori to know how many customers will walk in the next hour — and exactly what to have ready for them.
+            </p>
+            <p className={`text-base leading-relaxed ${isDark ? "text-white/50" : "text-black/50"}`}>
+              How many customers will come in? What items will be most popular? How much should we prep? Veratori answers all three — automatically, every day.
             </p>
           </motion.div>
+
         </div>
       </section>
 
@@ -109,7 +164,7 @@ export default function ProductPage() {
                 transition={{ delay: i * 0.1, duration: 0.45 }}
                 className={`p-8 rounded-xl border relative ${isDark ? "bg-white/5 border-white/10" : "bg-mist border-black/5"}`}
               >
-                <ImagePlaceholder text={stepImages[step.n]} className="h-36 w-full mb-4" />
+                {/* <ImagePlaceholder text={stepImages[step.n]} className="h-36 w-full mb-4" /> */}
                 <span className={`text-5xl font-black tracking-wider mb-6 block text-sage`}>{step.n}</span>
                 <h3 className="text-xl font-bold mb-3">{step.title}</h3>
                 <p className={`text-base leading-relaxed ${isDark ? "text-white/50" : "text-black/50"}`}>{step.body}</p>
@@ -175,10 +230,10 @@ export default function ProductPage() {
                 </div>
               ))}
             </div>
-            <ImagePlaceholder
+            {/* <ImagePlaceholder
               text="V1 Sensor unit detailed product photography — angled hero shot showing IP67 housing, LiDAR aperture, RGB camera module, and NVIDIA Jetson compute module visible through ventilated panel"
               className="h-56 w-full mt-12"
-            />
+            /> */}
           </div>
           <div className={`aspect-square rounded-2xl relative overflow-hidden border ${isDark ? "bg-white/5 border-white/10" : "bg-mist border-black/5"}`}>
             <div className="absolute inset-0 flex items-center justify-center p-2">
@@ -190,10 +245,10 @@ export default function ProductPage() {
       </section>
 
       {/* ── RL Training Lab ── */}
-      <RLTrainer />
+      {/* <RLTrainer /> */}
 
-      {/* ── Live Demo Sandbox ── */}
-      <section className="py-20 border-y border-black/5 dark:border-white/5 bg-white/2 dark:bg-black/2">
+      {/* ── Live Demo Sandbox (temporarily hidden) ── */}
+      {/*<section className="py-20 border-y border-black/5 dark:border-white/5 bg-white/2 dark:bg-black/2">
         <div className="max-w-7xl mx-auto px-6 text-center mb-12">
           <SectionHeading
             tag="Demonstration"
@@ -205,7 +260,7 @@ export default function ProductPage() {
         <div className="max-w-7xl mx-auto px-6">
           <YOLODemo />
         </div>
-      </section>
+      </section>*/}
 
     </main>
   );

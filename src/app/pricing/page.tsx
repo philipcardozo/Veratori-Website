@@ -9,20 +9,24 @@ import OrderForm from "@/components/pricing/OrderForm";
 
 const faqs = [
   {
-    q: "Is there an upfront cost?",
-    a: "Yes — a one-time hardware and installation fee covers the sensor units, ceiling mount, and system integration. Contact us for an installation quote. Your first 30 days of service are free so you can verify the value before your first billing cycle.",
+    q: "What's the difference between Standard, Growth, and Enterprise?",
+    a: "Standard ($299/unit/mo) covers a single walk-in with YOLO detection at 15 FPS, daily digest, and anomaly alerts. Growth ($359/unit/mo) adds 30 FPS detection, 4K LiDAR sensing, multi-location dashboard, and LTE failover. Enterprise ($549/unit/mo) adds dual-camera arrays, API access, dedicated account management, and priority hardware support.",
   },
   {
-    q: "What is included in the $359/month per unit?",
-    a: "Each sensor unit subscription includes continuous inventory monitoring, the Veratori dashboard, daily manager digests, anomaly alerts, and ongoing software updates. Hardware support is included for the duration of your subscription.",
+    q: "Is there an upfront cost?",
+    a: "Yes — a one-time hardware and installation fee covers the sensor units, ceiling mount, and system integration. Contact us for an installation quote. Your first 30 days of service are free so you can verify the value before your first billing cycle.",
   },
   {
     q: "How many sensor units do I need?",
     a: "Typically one unit per walk-in cooler or storage room. Most single-location restaurants deploy 1–3 units depending on how many separate storage areas they operate.",
   },
   {
-    q: "Can I cancel at any time?",
-    a: "Yes. There are no long-term contracts. You can cancel your subscription at the end of any billing period.",
+    q: "What subscription terms are available?",
+    a: "You can subscribe month-to-month at the standard rate, or commit to 6 months (5% off), 12 months (12% off), or 24 months (20% off). Longer terms are billed as a single upfront payment or in quarterly installments — contact us to discuss.",
+  },
+  {
+    q: "Can I switch plans or cancel?",
+    a: "You can upgrade or downgrade your plan at the start of any billing period. Month-to-month subscribers can cancel at any time. Annual and multi-year plans can be cancelled at the end of their committed term.",
   },
 ];
 
@@ -81,18 +85,18 @@ export default function PricingPage() {
               <span className="text-sage">Per unit, per month.</span>
             </h1>
             <p className={`text-lg max-w-2xl leading-relaxed ${isDark ? "text-white/55" : "text-black/55"}`}>
-              $359 per sensor unit, per month. A one-time installation fee covers hardware, ceiling mount, and system setup. Your first 30 days are free.
+              Three plans built around your operation size. Choose your hardware tier, number of sensor units, and subscription term — and see your price update in real time.
             </p>
           </motion.div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* <div className="max-w-7xl mx-auto px-6 py-8">
         <ImagePlaceholder
           text="V1 Sensor unit — clean product shot on white surface, NVIDIA Jetson Orin module visible, IP67 housing with LiDAR aperture and RGB camera lens, Veratori logo on front panel"
           className="w-full h-64"
         />
-      </div>
+      </div> */}
 
       {/* ── Pricing & FAQ ── */}
       <section className={`py-28`}>

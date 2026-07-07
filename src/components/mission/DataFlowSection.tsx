@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import Image from "next/image";
@@ -115,78 +115,136 @@ const VALUE_PROPS = [
 function PipelineDiagram({ isDark }: { isDark: boolean }) {
   const [active, setActive] = useState<string | null>(null);
 
+  // Step duration for the cascade (seconds)
+  const STEP = 0.72;
+  const CONNECTORS = PIPELINE.length - 1;
+
   return (
     <div className="relative w-full max-w-sm mx-auto">
-      {/* 24/7 badge */}
-      <div className="absolute -top-4 -right-4 z-10">
-        <motion.div
-          animate={{ scale: [1, 1.08, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-14 h-14 rounded-full bg-sage flex items-center justify-center border-2 border-black shadow-lg"
-        >
-          <span className="text-black font-black text-xs leading-none text-center">24/7<br/>LIVE</span>
-        </motion.div>
-      </div>
-
-      <div className="space-y-2">
+      <div className="space-y-0">
         {PIPELINE.map((node, i) => {
           const Icon = node.icon;
           const isActive = active === node.id;
           return (
             <div key={node.id}>
+              {/* ── Node card ── */}
               <motion.button
                 onClick={() => setActive(isActive ? null : node.id)}
-                whileHover={{ x: 3 }}
+                whileHover={{ x: 2 }}
                 className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center gap-4 ${
                   isActive
                     ? "border-opacity-80 bg-opacity-10"
-                    : isDark ? "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]" : "border-black/8 bg-white hover:bg-black/[0.02]"
+                    : isDark
+                    ? "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]"
+                    : "border-black/8 bg-white hover:bg-black/[0.02]"
                 }`}
                 style={isActive ? { borderColor: node.color, backgroundColor: node.color + "18" } : {}}
               >
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: node.color + "22" }}>
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: node.color + "22" }}
+                >
                   <Icon className="w-5 h-5" style={{ color: node.color }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-sm">{node.label}</p>
                     {i === 0 && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ backgroundColor: node.color + "25", color: node.color }}>
-                        <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1, repeat: Infinity }} className="w-1 h-1 rounded-full inline-block" style={{ backgroundColor: node.color }} />
+                      <span
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold"
+                        style={{ backgroundColor: node.color + "25", color: node.color }}
+                      >
+                        <motion.span
+                          animate={{ opacity: [1, 0.2, 1] }}
+                          transition={{ duration: 1.4, repeat: Infinity }}
+                          className="w-1 h-1 rounded-full inline-block"
+                          style={{ backgroundColor: node.color }}
+                        />
                         LIVE
                       </span>
                     )}
                   </div>
-                  <p className={`text-xs truncate ${isDark ? "text-white/40" : "text-black/40"}`}>{node.sublabel}</p>
+                  <p className={`text-xs truncate ${isDark ? "text-white/40" : "text-black/40"}`}>
+                    {node.sublabel}
+                  </p>
                 </div>
-                <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${isActive ? "rotate-90" : ""}`} style={{ color: node.color + "80" }} />
+                <ChevronRight
+                  className={`w-4 h-4 shrink-0 transition-transform duration-200 ${isActive ? "rotate-90" : ""}`}
+                  style={{ color: node.color + "80" }}
+                />
               </motion.button>
 
+              {/* ── Expandable detail ── */}
               <AnimatePresence>
                 {isActive && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-4 py-3 mx-4 mb-1 rounded-b-xl text-xs leading-relaxed font-mono"
-                      style={{ backgroundColor: node.color + "0D", color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.55)", borderLeft: `2px solid ${node.color}40` }}>
+                    <div
+                      className="px-4 py-3 mx-4 mb-1 rounded-b-xl text-xs leading-relaxed font-mono"
+                      style={{
+                        backgroundColor: node.color + "0D",
+                        color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.55)",
+                        borderLeft: `2px solid ${node.color}40`,
+                      }}
+                    >
                       {node.detail}
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Connector line */}
-              {i < PIPELINE.length - 1 && (
-                <div className="flex items-center justify-center h-5">
-                  <div className="relative flex flex-col items-center">
-                    <div className="w-px h-5 bg-gradient-to-b from-transparent via-sage/40 to-transparent" />
+              {/* ── Connector: seamless light-sweep ── */}
+              {i < CONNECTORS && (
+                <div className="flex justify-center my-0.5">
+                  {/* Outer container clips the sweep */}
+                  <div className="relative overflow-hidden rounded-full" style={{ width: 2, height: 48 }}>
+                    {/* Static dim track */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: isDark
+                          ? "linear-gradient(to bottom, rgba(125,216,122,0.04) 0%, rgba(125,216,122,0.12) 50%, rgba(125,216,122,0.04) 100%)"
+                          : "linear-gradient(to bottom, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0.06) 100%)",
+                      }}
+                    />
+                    {/* Primary sweep — sharp leading edge, long fade tail */}
                     <motion.div
-                      className="absolute w-1.5 h-1.5 rounded-full bg-sage"
-                      animate={{ y: [0, 18, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.5, ease: "linear" }}
+                      className="absolute w-full"
+                      style={{
+                        height: 96,       // 2× container so gradient never hard-clips
+                        background:
+                          "linear-gradient(to bottom, transparent 0%, transparent 30%, rgba(125,216,122,0.12) 42%, rgba(125,216,122,1) 50%, rgba(125,216,122,0.5) 60%, rgba(125,216,122,0.08) 72%, transparent 84%, transparent 100%)",
+                      }}
+                      animate={{ y: [-96, 48] }}
+                      transition={{
+                        duration: STEP,
+                        repeat: Infinity,
+                        delay: i * STEP,
+                        repeatDelay: CONNECTORS * STEP,   // pause = one full silent cycle after all connectors fire
+                        ease: [0.2, 0, 0.4, 1],           // fast-in, slow-out (data "arrives" decisively)
+                      }}
+                    />
+                    {/* Secondary echo — dimmer, 80ms behind, gives depth */}
+                    <motion.div
+                      className="absolute w-full"
+                      style={{
+                        height: 96,
+                        background:
+                          "linear-gradient(to bottom, transparent 0%, transparent 35%, rgba(125,216,122,0.04) 45%, rgba(125,216,122,0.28) 52%, rgba(125,216,122,0.04) 62%, transparent 72%, transparent 100%)",
+                      }}
+                      animate={{ y: [-96, 48] }}
+                      transition={{
+                        duration: STEP,
+                        repeat: Infinity,
+                        delay: i * STEP + 0.08,
+                        repeatDelay: CONNECTORS * STEP,
+                        ease: [0.2, 0, 0.4, 1],
+                      }}
                     />
                   </div>
                 </div>

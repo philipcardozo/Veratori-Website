@@ -72,31 +72,22 @@ function Story() {
           </p>
 
           <span className="text-sage font-semibold tracking-widest uppercase text-sm mb-4 block">The Mission</span>
-          <p className={`text-lg md:text-xl leading-relaxed mb-10 ${isDark ? "text-white/70" : "text-black/70"}`}>
+          <p className={`text-lg md:text-xl leading-relaxed ${isDark ? "text-white/70" : "text-black/70"}`}>
             Veratori's mission is to give food & beverage operators the same quality of operational intelligence that enterprise-level organizations have — accessible, real-time, and AI-powered. We believe the future of the food industry is run on data.
           </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            {[
-              { icon: Target, title: "Precision Intelligence", text: "Real-time computer vision running on-device, identifying inventory changes as they happen." },
-              { icon: Globe, title: "Built for Operators", text: "Designed from direct experience in food service — no enterprise complexity, no IT required." },
-            ].map(item => (
-              <div key={item.title}>
-                <item.icon className="w-8 h-8 md:w-10 md:h-10 text-sage mb-4" />
-                <h4 className="font-bold mb-2 text-lg md:text-xl">{item.title}</h4>
-                <p className={`text-base md:text-lg ${isDark ? "text-white/50" : "text-black/50"}`}>{item.text}</p>
-              </div>
-            ))}
-          </div>
         </div>
-        <div className="relative aspect-4/5 rounded-xl overflow-hidden border border-white/10 mt-4 lg:mt-0">
-          <Image
-            src="/images/assets/about-hero.png"
-            alt="Veratori lab"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black/25" />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4 lg:mt-0">
+          {[
+            { icon: Target, title: "Precision Intelligence", text: "Real-time computer vision running on-device, identifying inventory changes as they happen." },
+            { icon: Globe, title: "Built for Operators", text: "Designed from direct experience in food service — no enterprise complexity, no IT required." },
+          ].map(item => (
+            <div key={item.title}>
+              <item.icon className="w-8 h-8 md:w-10 md:h-10 text-sage mb-4" />
+              <h4 className="font-bold mb-2 text-lg md:text-xl">{item.title}</h4>
+              <p className={`text-base md:text-lg ${isDark ? "text-white/50" : "text-black/50"}`}>{item.text}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -181,7 +172,7 @@ function Roadmap() {
 /* ═══════════════════ TEAM SECTION ═══════════════════ */
 function Team() {
   const { isDark } = useTheme();
-  
+
   // Animation variants for the team member cards
   const cardVariants = {
     initial: { y: 0 },
@@ -190,12 +181,12 @@ function Team() {
 
   const infoBoxVariants = {
     initial: { opacity: 0, y: 15, scale: 0.98 },
-    hover: { 
-      opacity: 1, 
-      y: 0, 
+    hover: {
+      opacity: 1,
+      y: 0,
       scale: 1,
-      transition: { 
-        duration: 0.4, 
+      transition: {
+        duration: 0.4,
         ease: [0.23, 1, 0.32, 1] as [number, number, number, number]
       }
     }
@@ -214,8 +205,8 @@ function Team() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {team.map((member) => (
-            <motion.div 
-              key={member.name} 
+            <motion.div
+              key={member.name}
               initial="initial"
               whileHover="hover"
               variants={cardVariants}
@@ -228,7 +219,7 @@ function Team() {
                   fill
                   className="object-cover transition-all duration-700 group-hover:scale-[1.08]"
                 />
-                
+
                 {/* Hover Overlay Box */}
                 <motion.div
                   variants={infoBoxVariants}
@@ -262,40 +253,48 @@ export default function AboutPage() {
   return (
     <main className={isDark ? "bg-black text-white" : "bg-white text-black"}>
       {/* Page Header */}
-      <section className={`pt-28 pb-14 border-b ${isDark ? "border-white/5" : "border-black/5"}`}>
-        <div className="max-w-7xl mx-auto px-6">
+      <section className={`relative pt-28 pb-14 overflow-hidden`}
+        style={{
+          backgroundImage: 'url(/images/assets/team-hero.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {/* Color overlay */}
+        <div className="absolute inset-0 bg-black/88" />
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             <span className="text-sage font-semibold tracking-widest uppercase text-xs mb-4 block">About Veratori</span>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none mb-6 text-balance">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none mb-6 text-balance text-white">
               Quantifying the physical world<br />
               <span className="text-sage">for the future of retail</span>
             </h1>
-            <p className={`text-lg max-w-2xl leading-relaxed ${isDark ? "text-white/55" : "text-black/55"}`}>
-              We build specialized computer vision and sensor hardware to eliminate waste in the global food supply chain. 
+            <p className="text-lg max-w-2xl leading-relaxed text-white/70">
+              We build specialized computer vision and sensor hardware to eliminate waste in the global food supply chain.
             </p>
           </motion.div>
         </div>
       </section>
 
       <Story />
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* <div className="max-w-7xl mx-auto px-6 py-8">
         <ImagePlaceholder
           text="Veratori team at their engineering workspace — hardware prototypes on desk, multiple monitors showing computer vision output, collaborative work environment"
           className="h-64 w-full"
         />
-      </div>
+      </div> */}
       <Roadmap />
       <Team />
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* <div className="max-w-7xl mx-auto px-6 py-8">
         <ImagePlaceholder
           text="Company culture shot — team gathered around a whiteboard session, casual but focused, Veratori branding visible in background"
           className="h-48 w-full"
         />
-      </div>
+      </div> */}
 
       {/* Contact CTA */}
       <section className={`py-24 border-t ${isDark ? "border-white/5 bg-[#0A1220]" : "border-black/5 bg-[#F4F9F6]"}`}>

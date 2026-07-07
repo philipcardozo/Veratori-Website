@@ -109,7 +109,7 @@ function PostCard({ post, index }: { post: (typeof posts)[0]; index: number }) {
           : "bg-white border-black/[0.07] hover:border-black/20 hover:shadow-black/10"
       }`}
     >
-      <ImagePlaceholder text={post.imagePlaceholder} className="rounded-none border-0 border-b-2 h-48" />
+      {/* <ImagePlaceholder text={post.imagePlaceholder} className="rounded-none border-0 border-b-2 h-48" /> */}
       <div className="p-6 flex flex-col flex-1">
         <div className="flex items-center gap-3 mb-3">
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-sage/10 text-sage">
@@ -186,10 +186,10 @@ export default function BlogPage() {
               isDark ? "border-white/[0.08] bg-white/[0.02]" : "border-black/[0.08] bg-white"
             }`}
           >
-            <ImagePlaceholder
+            {/* <ImagePlaceholder
               text={featured.imagePlaceholder}
               className="rounded-none border-0 h-72 lg:h-auto"
-            />
+            /> */}
             <div className="p-10 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-4">
                 <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-sage/10 text-sage">
